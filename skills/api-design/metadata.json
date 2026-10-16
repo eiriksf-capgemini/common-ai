@@ -1,0 +1,33 @@
+{
+  "description": "REST API design patterns, versioning, error handling (RFC 7807) and OpenAPI conventions for backend services",
+  "domain": "backend",
+  "tags": [
+    "api",
+    "rest",
+    "design",
+    "openapi",
+    "error-handling"
+  ],
+  "examples": [
+    {
+      "scenario": "REST API design",
+      "prompt": "Design REST API endpoints for orders"
+    },
+    {
+      "scenario": "Error handling",
+      "prompt": "Add error handling with ProblemDetail"
+    },
+    {
+      "scenario": "Pagination",
+      "prompt": "Set up pagination for list endpoints"
+    },
+    {
+      "scenario": "API review",
+      "prompt": "Review the API design against best practices"
+    },
+    {
+      "scenario": "OpenAPI documentation",
+      "prompt": "Create OpenAPI annotations for the endpoints"
+    }
+  ]
+}

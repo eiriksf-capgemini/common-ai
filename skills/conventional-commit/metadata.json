@@ -1,0 +1,28 @@
+{
+  "description": "Generate conventional commit messages with project-relevant scopes and breaking-change format",
+  "domain": "general",
+  "tags": [
+    "git",
+    "commit",
+    "conventional-commits",
+    "changelog"
+  ],
+  "examples": [
+    {
+      "scenario": "Commit message",
+      "prompt": "Write a commit message for my changes"
+    },
+    {
+      "scenario": "Bugfix commit",
+      "prompt": "Write a conventional commit for this fix"
+    },
+    {
+      "scenario": "Breaking change",
+      "prompt": "Write a breaking change commit message"
+    },
+    {
+      "scenario": "Classification",
+      "prompt": "What type of commit is this change?"
+    }
+  ]
+}

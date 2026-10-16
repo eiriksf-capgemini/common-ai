@@ -1,0 +1,25 @@
+{
+  "description": "Visual inspection of web pages to identify and fix design problems",
+  "domain": "frontend",
+  "tags": [
+    "design-review",
+    "responsive",
+    "accessibility",
+    "layout",
+    "visual-inspection"
+  ],
+  "references": [
+    "references/framework-fixes.md",
+    "references/visual-checklist.md"
+  ],
+  "examples": [
+    {
+      "prompt": "Check the design on localhost:3000 and find layout problems",
+      "scenario": "Visual inspection of a local dev server"
+    },
+    {
+      "prompt": "Review the UI on our staging site and fix any responsive issues",
+      "scenario": "Responsive design review and fix"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "description": "Use before commit, push or pull request to check that the code is safe to merge",
+  "domain": "security",
+  "tags": [
+    "security",
+    "pre-commit",
+    "vulnerability-scanning",
+    "code-review"
+  ],
+  "examples": [
+    {
+      "prompt": "Run a security check on my changes before I push",
+      "scenario": "Pre-commit security check"
+    },
+    {
+      "prompt": "Is this PR safe to merge?",
+      "scenario": "PR security check"
+    }
+  ]
+}

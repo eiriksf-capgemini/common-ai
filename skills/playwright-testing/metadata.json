@@ -1,0 +1,33 @@
+{
+  "description": "Generate and run Playwright E2E tests for web applications with page objects, auth fixtures and accessibility tests",
+  "domain": "testing",
+  "tags": [
+    "playwright",
+    "e2e",
+    "testing",
+    "accessibility",
+    "responsive"
+  ],
+  "examples": [
+    {
+      "scenario": "Login",
+      "prompt": "Write a Playwright test for the login page"
+    },
+    {
+      "scenario": "Form",
+      "prompt": "Write E2E tests for the application form"
+    },
+    {
+      "scenario": "Auth setup",
+      "prompt": "Set up Playwright with auth fixtures"
+    },
+    {
+      "scenario": "Accessibility",
+      "prompt": "Add accessibility tests for all pages"
+    },
+    {
+      "scenario": "Responsive layout",
+      "prompt": "Test responsive layout with Playwright"
+    }
+  ]
+}

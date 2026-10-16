@@ -1,0 +1,38 @@
+{
+  "description": "OWASP Top 10:2025 code-level patterns for Kotlin, Go, Java and Node.js: access control, supply chain, injection and error handling",
+  "domain": "security",
+  "tags": [
+    "security",
+    "owasp",
+    "kotlin",
+    "go",
+    "java",
+    "nodejs",
+    "supply-chain"
+  ],
+  "references": [
+    "examples.md"
+  ],
+  "examples": [
+    {
+      "prompt": "Show secure access-control patterns for my Ktor endpoints",
+      "scenario": "OWASP A01 — access control in Kotlin"
+    },
+    {
+      "prompt": "How do I avoid SQL injection with Kotliquery?",
+      "scenario": "OWASP A05 — injection protection"
+    },
+    {
+      "prompt": "Check my Go code for supply-chain security",
+      "scenario": "OWASP A03 — supply-chain security"
+    },
+    {
+      "prompt": "Secure error handling in my Spring Boot controller",
+      "scenario": "OWASP A10 — exceptional conditions"
+    },
+    {
+      "prompt": "Check my Next.js API routes for security issues",
+      "scenario": "OWASP — Node.js/Next.js patterns"
+    }
+  ]
+}

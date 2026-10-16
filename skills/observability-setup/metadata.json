@@ -1,0 +1,25 @@
+{
+  "description": "Set up Prometheus metrics, OpenTelemetry tracing and health-check endpoints for Kubernetes-deployed applications",
+  "domain": "observability",
+  "tags": [
+    "prometheus",
+    "opentelemetry",
+    "health",
+    "metrics",
+    "kubernetes"
+  ],
+  "references": [
+    "references/grafana-queries.md",
+    "references/production-patterns.md",
+    "references/metric-conventions.md",
+    "references/tracing-and-logging.md",
+    "references/auto-instrumentation.md",
+    "references/alerting.md",
+    "references/typescript.md"
+  ],
+  "examples": [
+    "Set up Prometheus metrics and health endpoints for the order service",
+    "Add OpenTelemetry tracing to our Ktor app",
+    "Why don't my logs show a trace_id?"
+  ]
+}
