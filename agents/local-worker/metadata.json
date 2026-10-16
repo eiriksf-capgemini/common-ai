@@ -1,5 +1,5 @@
 {
-  "description": "Runs small, scoped tasks on the cheapest available model: Haiku in Claude Code, a local model in Copilot",
+  "description": "Runs small, scoped tasks on the cheapest available model (Haiku)",
   "domain": "general",
   "tags": [
     "sub-agent",
@@ -16,11 +16,11 @@
       "scenario": "Scoped change in one file"
     },
     {
-      "prompt": "Which file and line reads TOKEN_EXCHANGE_ENDPOINT?",
+      "prompt": "Which file and line reads API_BASE_URL?",
       "scenario": "Lookup without a change"
     },
     {
-      "prompt": "Rename isOrgNumberValid to isValidOrgNumber everywhere",
+      "prompt": "Rename isEmailValid to isValidEmail everywhere",
       "scenario": "Rename across call sites"
     }
   ]

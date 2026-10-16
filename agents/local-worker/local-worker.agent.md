@@ -1,6 +1,7 @@
 ---
 name: local-worker
-description: Runs scoped tasks on a local model, so they draw no AI credits
+description: Runs small, scoped tasks on the cheapest model available, for one-file edits, renames and lookups
+model: Claude Haiku 5.5
 tools:
   - read
   - edit
@@ -39,6 +40,11 @@ block; the code belongs in the arguments of the tool call, written once.
 
 **Stop when the task is done.** Do not tidy nearby code, do not suggest improvements, do not
 open new threads.
+
+**Never commit or push** unless the task says so.
+
+**Respect the sandbox.** If a command is blocked by the sandbox or the permission prompt,
+report it. Do not look for another way around it.
 
 ## When to say no
 

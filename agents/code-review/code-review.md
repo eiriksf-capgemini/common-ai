@@ -169,7 +169,7 @@ If the PR contains substantial AI-generated code:
 | -------- | -------------------------------------------------- |
 | 🟡       | Module-per-concern setup (`Application.configureX()`) |
 | 🟡       | Sealed class config (`Dev` / `Prod` / `Local`)     |
-| 🟡       | Kotliquery with HikariCP for database access       |
+| 🟡       | Connection-pooled database access (HikariCP or equivalent) |
 | 🟡       | Consumers validate required keys before processing a message |
 | 💭       | Error wrapping with `Result` or sealed classes     |
 
@@ -208,7 +208,7 @@ if err != nil {
 
 | Priority | Check                                       |
 | -------- | ------------------------------------------- |
-| 🔴       | Chainguard or distroless base images        |
+| 🟡       | Minimal base image (distroless, Chainguard or slim variants) |
 | 🟡       | Multi-stage builds to minimize image size   |
 | 🟡       | No full OS base images (`ubuntu`, `debian`) |
 | 💭       | `.dockerignore` present                     |

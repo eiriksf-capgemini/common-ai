@@ -34,10 +34,10 @@ You have read-only access to the workspace and the web:
 - **Find files by pattern** (glob)
 - **Search file contents** (grep, with regex)
 - **Read files** in full or by line range
-- **Read git history** with read-only commands: `git log`, `git blame`, `git show`, `git diff`
-- **Fetch web pages and search the web** for external documentation
+- **Read git history** with read-only commands (`git log`, `git blame`, `git show`, `git diff`) where the client gives you a shell; otherwise use the client's GitHub tools for commits and pull requests
+- **Fetch web pages**, and search the web where the client provides it, for external documentation
 
-You do not have an editing tool, and you must not run anything other than read-only git commands.
+You do not have an editing tool. If you have a shell, run nothing other than read-only git commands.
 
 ## Related skills
 
