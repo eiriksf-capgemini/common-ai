@@ -1,0 +1,9 @@
+{
+  "description": "Add an app-wide header bar with instance name, nav links and logged-in user to every Backstage page via AppRootWrapperBlueprint",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "frontend", "header"],
+  "examples": [
+    "Add a top bar visible on all Backstage pages",
+    "Show the logged-in user in a header across the app"
+  ]
+}

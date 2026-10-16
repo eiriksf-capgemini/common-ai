@@ -1,0 +1,11 @@
+{
+  "description": "Edit drafts into sharper, more human writing while preserving the writer's voice, or detect AI-slop patterns without rewriting",
+  "domain": "writing",
+  "tags": ["writing", "editing", "documentation"],
+  "references": ["eval.md"],
+  "examples": [
+    "Make this PR description read less like AI wrote it",
+    "Does this blog draft sound AI-generated?",
+    "Tighten this README intro without changing my tone"
+  ]
+}

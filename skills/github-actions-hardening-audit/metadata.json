@@ -1,0 +1,11 @@
+{
+  "description": "Read-only audit of GitHub Actions workflows against a five-item hardening baseline: SHA-pinned actions, explicit permissions, job timeouts, deploy concurrency and the pull_request_target ban",
+  "domain": "security",
+  "tags": ["github-actions", "ci", "security", "audit"],
+  "references": ["check_timeouts.py"],
+  "examples": [
+    "Audit the workflows in this repo",
+    "Are our GitHub Actions pinned to SHAs?",
+    "Check the CI security of acme/platform without cloning it"
+  ]
+}

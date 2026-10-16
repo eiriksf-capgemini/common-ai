@@ -1,0 +1,9 @@
+{
+  "description": "Restyle the Backstage scaffolder Create flow: template card colours and tags, or a full TemplateCard swap via SwappableComponentBlueprint",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "scaffolder", "theming", "frontend"],
+  "examples": [
+    "Rebrand the template cards under Create",
+    "Replace the TemplateCard component with our own design"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Sync users and groups from Microsoft Entra ID into the Backstage catalog and enrich User and Group entity pages with directory data",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "entra-id", "azure", "catalog"],
+  "examples": [
+    "Pull Entra ID users and groups into the Backstage catalog",
+    "Show last password change on the user page in Backstage",
+    "Make the Group entity page more useful"
+  ]
+}
