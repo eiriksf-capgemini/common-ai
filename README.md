@@ -36,7 +36,7 @@ Each customization has its own documentation in the table below.
 ## 📖 Folder structure
 
 ```plaintext
-├── agents/               # Custom agents (.agent.md + .metadata.json)
+├── agents/               # One folder per agent: <name>.md (Claude Code), <name>.agent.md (Copilot), metadata.json
 ├── instructions/         # File-pattern-based coding standards (.instructions.md + .metadata.json)
 ├── prompts/              # Task-specific scaffolding templates (.prompt.md + .metadata.json)
 ├── skills/               # One folder per skill, each with a SKILL.md and metadata.json
@@ -47,7 +47,7 @@ Each customization has its own documentation in the table below.
 
 ## 🤝 Contributing
 
-1. **Agents**: Add `*.agent.md` to `agents/`
+1. **Agents**: Add a folder to `agents/` with `<name>.md` for Claude Code. A `<name>.agent.md` for Copilot is welcome but optional
 2. **Instructions**: Add `*.instructions.md` to `instructions/`
 3. **Prompts**: Add `*.prompt.md` to `prompts/`
 4. **Skills**: Add a folder with a `SKILL.md` to `skills/`

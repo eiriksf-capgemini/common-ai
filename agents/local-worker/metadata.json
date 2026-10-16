@@ -1,0 +1,27 @@
+{
+  "description": "Runs small, scoped tasks on the cheapest available model: Haiku in Claude Code, a local model in Copilot",
+  "domain": "general",
+  "tags": [
+    "sub-agent",
+    "cost",
+    "local"
+  ],
+  "files": {
+    "claude-code": "local-worker.md",
+    "copilot": "local-worker.agent.md"
+  },
+  "examples": [
+    {
+      "prompt": "Add a KDoc comment to daysBetween in DateUtil.kt",
+      "scenario": "Scoped change in one file"
+    },
+    {
+      "prompt": "Which file and line reads TOKEN_EXCHANGE_ENDPOINT?",
+      "scenario": "Lookup without a change"
+    },
+    {
+      "prompt": "Rename isOrgNumberValid to isValidOrgNumber everywhere",
+      "scenario": "Rename across call sites"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "description": "Code review for Kotlin, TypeScript, Go, Dockerfiles and GitHub Actions: finds bugs, security issues and convention violations, reports prioritised findings without editing",
+  "domain": "general",
+  "tags": [
+    "code-review",
+    "quality",
+    "security",
+    "pre-merge"
+  ],
+  "files": {
+    "claude-code": "code-review.md",
+    "copilot": "code-review.agent.md"
+  },
+  "examples": [
+    {
+      "prompt": "Review my changes before I open a PR",
+      "scenario": "Pre-PR review"
+    },
+    {
+      "prompt": "Check this Kotlin controller for security problems",
+      "scenario": "Security check"
+    },
+    {
+      "prompt": "Review src/app/usage/page.tsx against our conventions",
+      "scenario": "Convention check"
+    }
+  ]
+}
