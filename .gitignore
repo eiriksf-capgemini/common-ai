@@ -1,0 +1,42 @@
+# Secrets - never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*
+service-account*.json
+secret*.yaml
+secrets*.yaml
+kubeconfig
+kubeconfig.yaml
+
+# Dependencies and build artifacts
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and local scratch
+*.log
+.local/
+.scratch/
+.tmp/
+
+# Developer-local editor/agent config (not portable across contributors)
+.claude/settings.local.json
+.mcp.json
