@@ -11,7 +11,7 @@ metadata:
 # Backstage scaffolder templates
 
 Built from a real session adding an "AI-first application" template
-(`examples/template/ai-first-app/template.yaml`) to a Backstage instance —
+(its `template.yaml`) to a Backstage instance —
 covers three gotchas that aren't obvious from the Backstage docs alone.
 
 ## 1. A template needs TWO separate registrations, and they fail independently
@@ -64,7 +64,7 @@ depend on field A" or "validate field B against field A's current value" is
 not achievable directly in `parameters:`.
 
 The workaround, used for enforcing that a repo name is prefixed with its
-business area (`examples/template/ai-first-app/template.yaml:85-132`), is
+business area (in the template's `template.yaml`), is
 `dependencies.<field>.oneOf`, pairing each enum value of the driving field
 with a `pattern` constraint on the dependent field:
 
@@ -114,9 +114,8 @@ ${{ github.sha }}
 This only matters for edits to files inside `skeleton/` (pre-scaffold) — once
 a repo is generated from the template, the output file is a normal GHA
 workflow with no Nunjucks involved, and `${{ }}` behaves normally from then
-on. See the comment at the top of
-`examples/template/ai-first-app/skeleton/.github/workflows/ci.yml` for the
-in-repo note left for the next person editing that file.
+on. Leave a comment at the top of the skeleton workflow file as an
+in-repo note for the next person editing it.
 
 If you need to confirm exactly which delimiters Nunjucks is configured with
 for a given `@backstage/plugin-scaffolder-backend` version rather than

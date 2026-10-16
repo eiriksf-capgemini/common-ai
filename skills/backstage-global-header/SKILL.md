@@ -22,7 +22,7 @@ wraps *every* route, not one page's content.
 
 Those are per-page components a page opts into rendering inside its own
 `<Content>` — that's what the `PageLayout` swappable component
-(`backstage-plugin-wiring`'s `SwappableComponentBlueprint` family) already
+(`backstage-scaffolder-styling`'s `SwappableComponentBlueprint` family) already
 renders per page. None of them wrap the whole app. For chrome that must
 appear identically on every route regardless of which page is mounted, the
 right extension point is `AppRootWrapperBlueprint` from
@@ -107,8 +107,7 @@ direct dependency — it's usually only a transitive one here, and a plain
 
 - `makeStyles`' `fontWeight` typing breaks with `theme.typography.fontWeightBold`
   when any rule in the same `makeStyles` call also takes a props argument —
-  use a numeric literal (`fontWeight: 700`) instead. Same root cause as the
-  `TemplateCard`/scaffolder-styling fontWeight fix.
+  use a numeric literal (`fontWeight: 700`) instead.
 - Nav links inside the header are plain `<Link>` (`@backstage/core-components`)
   to fixed paths (`/`, `/catalog`, `/create`) — this duplicates the sidebar's
   own nav, which is fine (top bar quick-links vs. full sidebar menu is a

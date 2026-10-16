@@ -32,14 +32,14 @@ Both verified against zizmor 1.30.1 on 2026-09-24. They are the reason this skil
 1. **`timeout-minutes` has no zizmor audit at all.** Nothing in the rule set covers baseline item 3. `check_timeouts.py` in this skill directory does it.
 2. **`concurrency-limits` does not fire at the default `regular` persona.** Baseline item 4 is silently skipped unless you pass `--persona=pedantic`. Confirmed by running both personas over the same repo: `regular` returned three rule types, `pedantic` returned the same three plus `concurrency-limits`.
 
-So a naive `zizmor .` covers three of the five baseline items, not five.
+So a naive `zizmor .` fully covers only two of the five baseline items (1 and 5). Item 2 is only partly covered at the default persona (`undocumented-permissions` needs `--persona=pedantic`), and items 3 and 4 are not covered at all.
 
 ## Baseline item → zizmor rule
 
 | # | Baseline check | Covered by | Persona |
 |---|---|---|---|
 | 1 | SHA-pin every `uses:`, never a bare tag | `unpinned-uses`, `stale-action-refs`, `ref-version-mismatch`, `impostor-commit` | `regular` |
-| 2 | Explicit `permissions:` per job, never `write-all` | `excessive-permissions`, `undocumented-permissions` | `regular` |
+| 2 | Explicit `permissions:` per job, never `write-all` | `excessive-permissions` (`regular`), `undocumented-permissions` (`pedantic` only) | `regular` / **`pedantic`** |
 | 3 | `timeout-minutes` on every job | **`check_timeouts.py`** (no zizmor rule exists) | — |
 | 4 | `concurrency:` on deploy workflows | `concurrency-limits` | **`pedantic` only** |
 | 5 | Ban `pull_request_target` + head-ref checkout | `dangerous-triggers`, `ref-confusion`, `template-injection` | `regular` |

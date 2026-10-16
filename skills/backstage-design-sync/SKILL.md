@@ -142,9 +142,9 @@ Backstage has a **second, independent color table** for the colored header band 
 - `packages/app/public/index.html`: `<meta name="theme-color">`, and add a `<link rel="stylesheet" href="...fonts.googleapis.com...">` (or self-hosted `@font-face`) if the DS specifies a webfont not already loaded.
 - `app-config.yaml`: `app.title`, `organization.name` — cosmetic but part of "look and feel," trivial to update alongside everything else.
 
-## 5. Common adjacent bug: a page "looks old" because it was never registered, not because it's untheme
+## 5. Adjacent check: a page "looks old" may be unregistered, not unthemed
 
-Before assuming a themeless-looking page is a theme-propagation bug, check whether it's actually wired into `features: [...]` in `App.tsx` at all. In one real case, `@backstage/plugin-catalog-import` was a listed `package.json` dependency but never imported/added to `features` — its page never mounted, so what the user saw was a 404/not-found page (which *does* inherit the theme's chrome), not a broken theme. Fix: import the plugin's `/alpha` entry point and add it to `features`.
+Before assuming a themeless-looking page is a theme-propagation bug, check whether the plugin is actually registered at all, either through `app.packages: all` auto-discovery (see the correction below) or explicitly in `features: [...]` in `App.tsx`. In one real case, `@backstage/plugin-catalog-import` was a listed `package.json` dependency but never imported/added to `features` — its page never mounted, so what the user saw was a 404/not-found page (which *does* inherit the theme's chrome), not a broken theme. Fix: import the plugin's `/alpha` entry point and add it to `features`.
 
 **Correction (superseded claim, keep for context):** an earlier version of this
 skill asserted that `app-config.yaml`'s `app.packages: all` never actually

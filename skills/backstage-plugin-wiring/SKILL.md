@@ -56,7 +56,7 @@ already covering it — worth doing either way, but don't cite this as proof
 the page was broken without having tested the pre-fix state):
 `@backstage/plugin-notifications-backend` and
 `@backstage/plugin-signals-backend` were registered in
-`packages/backend/src/index.ts:66-67`, but the notifications page and
+`packages/backend/src/index.ts`, but the notifications page and
 real-time toast delivery did nothing until
 `@backstage/plugin-notifications/alpha` and `@backstage/plugin-signals/alpha`
 were imported and added to `features` in `packages/app/src/App.tsx`:
@@ -79,9 +79,11 @@ export default createApp({
 
 This is the same class of bug as the catalog-import case documented in
 `backstage-design-sync` (a page 404s instead of rendering, inheriting the
-theme's chrome so it can look like a theming bug) — treat "plugin backend
-works but nothing shows in the UI" as first evidence of a missing
-`features[]` entry, not a backend problem, before digging further.
+theme's chrome so it can look like a theming bug) — when "plugin backend
+works but nothing shows in the UI", the first step is the auto-discovery
+check above (is `app.packages: all` set, and does the page already work?).
+Only if that check shows the plugin is not being discovered, treat it as a
+missing `features[]` entry rather than a backend problem.
 
 ## 2. Logger config in `app-config.yaml` has a hard ceiling — it cannot route logs externally
 

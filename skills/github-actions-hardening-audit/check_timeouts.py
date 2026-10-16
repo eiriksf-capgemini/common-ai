@@ -12,7 +12,7 @@ Usage:
     check_timeouts.py --json <repo-or-workflow-path> [...]
 
 Exit codes: 0 = every job has a timeout, 1 = at least one job does not,
-2 = nothing to scan.
+2 = nothing scanned (no files, no parseable jobs, or all unreadable).
 """
 
 import json
@@ -158,6 +158,17 @@ def main(argv):
 
     results = [r for path in paths for r in audit_file(path)]
     missing = [r for r in results if r["status"] == "missing"]
+    scanned = [r for r in results if r["status"] != "unreadable"]
+
+    if not scanned:
+        for r in results:
+            print(f"warning: {r['file']}: could not read ({r['detail']})",
+                  file=sys.stderr)
+        print("no jobs found in the scanned workflow files", file=sys.stderr)
+        if as_json:
+            json.dump(results, sys.stdout, indent=2)
+            sys.stdout.write("\n")
+        return 2
 
     if as_json:
         json.dump(results, sys.stdout, indent=2)
@@ -171,9 +182,10 @@ def main(argv):
             print(f"{r['file']}:{r['line']}: job '{r['job']}' calls a reusable "
                   f"workflow; set the timeout in the called workflow")
         elif r["status"] == "unreadable":
-            print(f"{r['file']}: could not read ({r['detail']})")
+            print(f"warning: {r['file']}: could not read ({r['detail']})",
+                  file=sys.stderr)
 
-    total = len([r for r in results if r["status"] != "unreadable"])
+    total = len(scanned)
     print(f"\n{len(missing)}/{total} jobs missing timeout-minutes "
           f"across {len(paths)} workflow file(s)")
     return 1 if missing else 0

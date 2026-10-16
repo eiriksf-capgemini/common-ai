@@ -123,7 +123,8 @@ class GraphDirectoryInsightsProcessor implements CatalogProcessor {
 - Get the Graph token via `@azure/msal-node`'s `ConfidentialClientApplication.acquireTokenByClientCredential({ scopes: ['https://graph.microsoft.com/.default'] })`
   (client-credentials flow) — this is a separate, smaller permission
   footprint than the org-wide msgraph sync: `User.Read.All` (for
-  `passwordProfile.lastPasswordChangeDateTime`), `AuditLog.Read.All` (for
+  `lastPasswordChangeDateTime`, a top-level user property that must be
+  requested explicitly with `$select`), `AuditLog.Read.All` (for
   `signInActivity.lastSignInDateTime`), `UserAuthenticationMethod.Read.All`
   (for `/users/{id}/authentication/methods`) — all admin-consented app
   permissions, none delegated.
