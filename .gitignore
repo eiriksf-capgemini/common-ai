@@ -40,3 +40,6 @@ Thumbs.db
 # Developer-local editor/agent config (not portable across contributors)
 .claude/settings.local.json
 .mcp.json
+
+# GitHub App identity for agents (see skills/github-app-agent-identity)
+.gh-app-identity.json
