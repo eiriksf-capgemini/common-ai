@@ -54,7 +54,7 @@ Copy `gh-app-token.mjs` from this skill directory to `scripts/gh-app-token.mjs` 
 | `node scripts/gh-app-token.mjs --env` | `export` lines for `GH_TOKEN`, `GITHUB_TOKEN`, `GIT_AUTHOR_*`, `GIT_COMMITTER_*`, a shell-scoped credential helper, `# expires` | `eval "$(node scripts/gh-app-token.mjs --env)"` at the start of an agent's shell |
 | `node scripts/gh-app-token.mjs --check` | bot login, user id, commit email, repos reachable; the token is minted and discarded | step 4, and whenever auth looks wrong |
 
-Everything spliced into an `export` line is allowlisted first (`[A-Za-z0-9._-]` for the token, `<slug>[bot]` for the login, digits for the id, ISO-8601 for the expiry). A value that fails the allowlist exits 1 with nothing on stdout, so the `eval` is safe against a hostile or malformed API response. Error paths redact the token from any message before printing.
+Unknown arguments exit 1 rather than falling through to the token-printing default, so a typo of `--check` cannot print a live token. The config file is found in the current directory or the nearest parent, and a relative `privateKeyPath` resolves against the file's own directory, so the helper works from any directory inside the repo. Everything spliced into an `export` line is allowlisted first (`[A-Za-z0-9._-]` for the token, `<slug>[bot]` for the login, digits for the id, ISO-8601 for the expiry). A value that fails the allowlist exits 1 with nothing on stdout, so the `eval` is safe against a hostile or malformed API response. Error paths redact the token from any message before printing.
 
 ### 4. Verify the identity before wiring anything
 
@@ -72,7 +72,7 @@ gh api repos/<owner>/<repo>/commits/$(git rev-parse HEAD) -q '.author.login, .co
 git push https://github.com/<owner>/<repo>.git --delete probe/bot-identity
 ```
 
-Both lines must print `<slug>[bot]`. The push URL is HTTPS on purpose: an SSH remote authenticates with the human's key and ignores the token, so a push to `origin` over SSH silently lands as the human. If the repo has a pre-push hook that runs the test suite, run the probe from a checkout that has `node_modules`; the hook fails locally before GitHub sees anything.
+Both lines must print `<slug>[bot]`. The push URL is HTTPS on purpose: an SSH remote authenticates with the human's key and ignores the token, so a push to `origin` over SSH silently lands as the human. The `--env` output also resets git's credential-helper list for github.com before adding its own, so a global helper such as osxkeychain or Git Credential Manager holding the human's HTTPS credentials cannot answer first. If the repo has a pre-push hook that runs the test suite, run the probe from a checkout that has `node_modules`; the hook fails locally before GitHub sees anything.
 
 ### 5. Wire the agents
 

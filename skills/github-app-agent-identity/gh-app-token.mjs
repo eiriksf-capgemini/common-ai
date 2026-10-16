@@ -7,7 +7,9 @@
 //   node gh-app-token.mjs --env       # prints `export` lines; eval "$(node gh-app-token.mjs --env)"
 //   node gh-app-token.mjs --check     # prints bot login, user id, repos reachable; never prints the token
 //
-// Configuration, env first, then ./.gh-app-identity.json (gitignore it):
+// Configuration, env first, then .gh-app-identity.json found in the current
+// directory or the nearest parent (gitignore it). A relative privateKeyPath in
+// the file resolves against the file's own directory:
 //   GH_APP_CLIENT_ID          app client id (Iv23li...) or numeric app id     [required]
 //   GH_APP_INSTALLATION_ID    installation id on the owner                    [required]
 //   GH_APP_PRIVATE_KEY_PATH   PEM file, gitignored                            [required]
@@ -18,7 +20,7 @@
 // Node 18+; no dependencies. Tokens expire after one hour; re-run for a fresh one.
 import { createSign } from "node:crypto";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const CONFIG_FILE = ".gh-app-identity.json";
@@ -63,12 +65,16 @@ export function buildEnvLines(token, expiresAt, botLogin, botUserId, env = {}) {
     `export GIT_COMMITTER_EMAIL='${email}'`,
   ];
   // A credential helper scoped to this shell, so `git push https://github.com/<owner>/<repo>.git`
-  // authenticates as the bot without touching ~/.gitconfig. An SSH remote never carries the token.
+  // authenticates as the bot without touching ~/.gitconfig. The empty VALUE_0 resets the helper
+  // list for github.com first, so a global helper (osxkeychain, manager) holding the human's
+  // credentials cannot answer before ours. An SSH remote never carries the token.
   if (env.GIT_CONFIG_COUNT === undefined) {
     lines.push(
-      "export GIT_CONFIG_COUNT=1",
+      "export GIT_CONFIG_COUNT=2",
       "export GIT_CONFIG_KEY_0=credential.https://github.com.helper",
-      `export GIT_CONFIG_VALUE_0='!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f'`,
+      "export GIT_CONFIG_VALUE_0=",
+      "export GIT_CONFIG_KEY_1=credential.https://github.com.helper",
+      `export GIT_CONFIG_VALUE_1='!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f'`,
     );
   } else {
     lines.push(
@@ -79,12 +85,25 @@ export function buildEnvLines(token, expiresAt, botLogin, botUserId, env = {}) {
   return lines;
 }
 
+export function findConfigFile(cwd) {
+  let dir = resolve(cwd);
+  for (;;) {
+    const candidate = resolve(dir, CONFIG_FILE);
+    if (existsSync(candidate)) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir) return undefined;
+    dir = parent;
+  }
+}
+
 export function loadConfig(env, cwd = process.cwd()) {
   let file = {};
-  const path = resolve(cwd, CONFIG_FILE);
-  if (existsSync(path)) {
+  let fileDir = cwd;
+  const path = findConfigFile(cwd);
+  if (path) {
     try {
       file = JSON.parse(readFileSync(path, "utf8"));
+      fileDir = dirname(path);
     } catch (err) {
       return { error: `cannot parse ${path}: ${err.message}` };
     }
@@ -113,7 +132,8 @@ export function loadConfig(env, cwd = process.cwd()) {
   if (!ID_PATTERN.test(cfg.installationId)) {
     return { error: "installationId must be numeric" };
   }
-  cfg.privateKeyPath = resolve(cwd, cfg.privateKeyPath);
+  const keyFromEnv = env.GH_APP_PRIVATE_KEY_PATH !== undefined && env.GH_APP_PRIVATE_KEY_PATH !== "";
+  cfg.privateKeyPath = resolve(keyFromEnv ? cwd : fileDir, cfg.privateKeyPath);
   return { cfg };
 }
 
@@ -128,6 +148,10 @@ export async function main({
   const fail = (msg) => ({ code: 1, stdout: "", stderr: `gh-app-token: ${msg}\n` });
   const wantEnv = argv.includes("--env");
   const wantCheck = argv.includes("--check");
+  const unknown = argv.filter((a) => a !== "--env" && a !== "--check");
+  if (unknown.length) {
+    return fail(`unknown argument ${unknown[0]}; use --env or --check (no argument prints the token)`);
+  }
 
   const loaded = loadConfig(env, cwd);
   if (loaded.error) return fail(loaded.error);
@@ -145,10 +169,10 @@ export async function main({
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   });
-  const jwtAuth = `Bearer ${mintJwt(pem, cfg.clientId)}`;
-
+  let jwtAuth;
   let token;
   try {
+    jwtAuth = `Bearer ${mintJwt(pem, cfg.clientId)}`;
     const res = await fetchFn(
       `${API}/app/installations/${cfg.installationId}/access_tokens`,
       { method: "POST", headers: headers(jwtAuth) },
@@ -205,7 +229,7 @@ export async function main({
     }
 
     if (wantCheck) {
-      const repos = await fetchFn(`${API}/installation/repositories`, {
+      const repos = await fetchFn(`${API}/installation/repositories?per_page=100`, {
         headers: headers(`Bearer ${token}`),
       });
       const reposBody = await repos.json();
@@ -217,7 +241,7 @@ export async function main({
         `bot user id:    ${botUserId}`,
         `commit email:   ${botUserId}+${botLogin}@users.noreply.github.com`,
         `installation:   ${cfg.installationId}`,
-        `repositories:   ${names.length ? names.join(", ") : `(GET /installation/repositories returned ${repos.status})`}`,
+        `repositories:   ${names.length ? names.join(", ") : `(GET /installation/repositories returned ${repos.status})`}${names.length >= 100 ? " (first 100 shown)" : ""}`,
         `token expires:  ${body.expires_at}`,
         "token minted and discarded; use --env to export it",
       ];
