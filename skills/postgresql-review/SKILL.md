@@ -18,8 +18,8 @@ Run `EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)` to analyze queries:
 
 ```sql
 EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
-SELECT * FROM order
-WHERE user_id = '12345678901'
+SELECT * FROM orders
+WHERE user_id = '3f2b8c1e-6a4d-4e0b-9d57-1c2a7e5f9b10'
   AND status = 'active'
 ORDER BY created_at DESC
 LIMIT 10;
@@ -39,21 +39,21 @@ LIMIT 10;
 
 ```sql
 -- Simple index for lookups
-CREATE INDEX idx_order_user_id ON order(user_id);
+CREATE INDEX idx_orders_user_id ON orders(user_id);
 
 -- Composite index — columns in order of selectivity
-CREATE INDEX idx_order_user_status ON order(user_id, status);
+CREATE INDEX idx_orders_user_status ON orders(user_id, status);
 
 -- Partial index — only relevant rows
-CREATE INDEX idx_order_active ON order(user_id)
+CREATE INDEX idx_orders_active ON orders(user_id)
 WHERE status = 'active';
 
 -- Covering index — avoids table lookup
-CREATE INDEX idx_order_covering ON order(user_id, status)
+CREATE INDEX idx_orders_covering ON orders(user_id, status)
 INCLUDE (created_at, amount);
 
 -- Concurrent — no table locking (requires outside transaction)
-CREATE INDEX CONCURRENTLY idx_order_date ON order(created_at);
+CREATE INDEX CONCURRENTLY idx_orders_date ON orders(created_at);
 ```
 
 ### When to Use What?
@@ -82,7 +82,7 @@ WHERE metadata @> '{"type": "order", "status": "paid"}';
 SELECT
     id,
     metadata->>'type' AS type,
-    metadata->'detaljer'->>'amount' AS amount
+    metadata->'details'->>'amount' AS amount
 FROM events;
 
 -- ❌ Wrong — casting in WHERE without index
@@ -97,8 +97,8 @@ CREATE INDEX idx_metadata_created_at ON events (((metadata->>'created_at')::time
 ```sql
 -- ✅ Correct — CTE for readability
 WITH active_orders AS (
-    SELECT user_id, COUNT(*) AS antall
-    FROM order
+    SELECT user_id, COUNT(*) AS order_count
+    FROM orders
     WHERE status = 'active'
     GROUP BY user_id
 ),
@@ -108,32 +108,35 @@ last_activity AS (
     GROUP BY user_id
 )
 SELECT
-    av.user_id,
-    av.antall,
-    sa.last_active
-FROM active_orders av
-JOIN last_activity sa USING (user_id)
-WHERE av.antall > 1;
+    ao.user_id,
+    ao.order_count,
+    la.last_active
+FROM active_orders ao
+JOIN last_activity la USING (user_id)
+WHERE ao.order_count > 1;
 ```
 
 ## Window Functions
 
 ```sql
 -- Ranking within group
-SELECT
-    user_id,
-    order_id,
-    created_at,
-    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS rn
-FROM order
+SELECT user_id, order_id, created_at
+FROM (
+    SELECT
+        user_id,
+        order_id,
+        created_at,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS rn
+    FROM orders
+) ranked
 WHERE rn = 1;  -- Latest order per user
 
 -- Running total
 SELECT
-    dato,
-    antall,
-    SUM(antall) OVER (ORDER BY dato) AS kumulativt
-FROM daglig_statistikk;
+    stat_date,
+    event_count,
+    SUM(event_count) OVER (ORDER BY stat_date) AS cumulative
+FROM daily_statistics;
 ```
 
 ## Anti-patterns
@@ -144,21 +147,22 @@ FROM daglig_statistikk;
 // ❌ Wrong — N+1: one query per user
 val users = repository.findAll()
 users.forEach { user ->
-    val order = orderRepository.findByUserId(user.id)  // N extra queries
+    val orders = orderRepository.findByUserId(user.id)  // N extra queries
+    process(user, orders)
 }
 
 // ✅ Correct — JOIN or batch query
-val usersAndOrders = repository.findAllWithOrders()  // Single query with JOIN
+val usersWithOrders = repository.findAllUsersWithOrders()  // Single query with JOIN
 ```
 
 ### SELECT *
 
 ```sql
 -- ❌ Wrong — fetches all columns incl. large JSONB/TEXT
-SELECT * FROM dokument WHERE user_id = '12345';
+SELECT * FROM documents WHERE user_id = 12345;
 
 -- ✅ Correct — only necessary columns
-SELECT id, tittel, created_at FROM dokument WHERE user_id = '12345';
+SELECT id, title, created_at FROM documents WHERE user_id = 12345;
 ```
 
 ### Missing LIMIT on Unbounded Data
@@ -195,14 +199,14 @@ HikariDataSource().apply {
 
 ```sql
 -- Add column with default (PostgreSQL 11+ — instant, no rewrite)
-ALTER TABLE stor_tabell ADD COLUMN ny_kolonne BOOLEAN DEFAULT false;
+ALTER TABLE large_table ADD COLUMN new_column BOOLEAN DEFAULT false;
 
 -- Create index without locking the table
-CREATE INDEX CONCURRENTLY idx_ny ON stor_tabell(ny_kolonne);
+CREATE INDEX CONCURRENTLY idx_large_table_new_column ON large_table(new_column);
 
 -- Batch update (avoid long transaction)
 -- Run in application code with batches of 10,000 rows:
-UPDATE stor_tabell SET ny_kolonne = true WHERE id BETWEEN $1 AND $2;
+UPDATE large_table SET new_column = true WHERE id BETWEEN $1 AND $2;
 ```
 
 ## Checklist

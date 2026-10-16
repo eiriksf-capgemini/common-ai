@@ -19,13 +19,13 @@ sealed class Environment(
     val name: String,
     val databaseUrl: String,
     val kafkaBrokers: String,
-    val azureAdIssuer: String
+    val oidcIssuer: String
 ) {
     data object Local : Environment(
         name = "local",
         databaseUrl = "jdbc:postgresql://localhost:5432/myapp",
         kafkaBrokers = "localhost:9092",
-        azureAdIssuer = "http://localhost:8080/azuread"
+        oidcIssuer = "http://localhost:8080/oidc"
     )
 
     data class Dev(
@@ -34,7 +34,7 @@ sealed class Environment(
         name = "dev",
         databaseUrl = env.getValue("DATABASE_URL"),
         kafkaBrokers = env.getValue("KAFKA_BROKERS"),
-        azureAdIssuer = env.getValue("AZURE_OPENID_CONFIG_ISSUER")
+        oidcIssuer = env.getValue("OIDC_ISSUER")
     )
 
     data class Prod(
@@ -43,14 +43,14 @@ sealed class Environment(
         name = "prod",
         databaseUrl = env.getValue("DATABASE_URL"),
         kafkaBrokers = env.getValue("KAFKA_BROKERS"),
-        azureAdIssuer = env.getValue("AZURE_OPENID_CONFIG_ISSUER")
+        oidcIssuer = env.getValue("OIDC_ISSUER")
     )
 
     companion object {
         fun from(env: Map<String, String>): Environment {
             return when (env["APP_CLUSTER"]) {
-                "dev-gcp" -> Dev(env)
-                "prod-gcp" -> Prod(env)
+                "dev" -> Dev(env)
+                "prod" -> Prod(env)
                 else -> Local
             }
         }
@@ -79,7 +79,7 @@ import com.natpryce.konfig.*
 data class AppConfig(
     val database: DatabaseConfig,
     val kafka: KafkaConfig,
-    val azure: AzureConfig
+    val auth: AuthConfig
 )
 
 data class DatabaseConfig(
@@ -88,7 +88,7 @@ data class DatabaseConfig(
 data class KafkaConfig(
     val brokers: String
 )
-data class AzureConfig(
+data class AuthConfig(
     val issuer: String
 )
 
@@ -103,9 +103,9 @@ val appConfig = AppConfig(
         brokers = config.getOrNull(Key("KAFKA_BROKERS", stringType))
             ?: "localhost:9092"
     ),
-    azure = AzureConfig(
-        issuer = config.getOrNull(Key("AZURE_OPENID_CONFIG_ISSUER", stringType))
-            ?: "http://localhost:8080/azuread"
+    auth = AuthConfig(
+        issuer = config.getOrNull(Key("OIDC_ISSUER", stringType))
+            ?: "http://localhost:8080/oidc"
     )
 )
 ```
@@ -125,8 +125,8 @@ sealed interface Environment {
         private val all: List<Environment> = listOf(
             TestEnvironment,
             LocalEnvironment,
-            GcpEnvironment.DEV,
-            GcpEnvironment.PROD
+            CloudEnvironment.DEV,
+            CloudEnvironment.PROD
         )
 
         val current: Environment by lazy {
@@ -144,53 +144,12 @@ sealed class DefaultEnvironment(
 object TestEnvironment : DefaultEnvironment("test", Environment.Tier.TEST)
 object LocalEnvironment : DefaultEnvironment("local", Environment.Tier.LOCAL)
 
-enum class GcpEnvironment(
+enum class CloudEnvironment(
     override val cluster: String,
     override val tier: Environment.Tier
 ) : Environment {
-    DEV("dev-gcp", Environment.Tier.DEV),
-    PROD("prod-gcp", Environment.Tier.PROD)
-}
-```
-
-```kotlin
-data class DatabaseConfig(
-    val url: String,
-    val username: String,
-    val password: String
-)
-
-data class KafkaConfig(
-    val brokers: String,
-    val topic: String
-)
-
-data class AzureConfig(
-    val clientId: String,
-    val issuer: String,
-    val jwksUri: String
-)
-
-fun loadConfig(): AppConfig {
-    val config = ConfigurationProperties.systemProperties() overriding
-                 EnvironmentVariables()
-
-    return AppConfig(
-        database = DatabaseConfig(
-            url = config[Key("database.url", stringType)],
-            username = config[Key("database.username", stringType)],
-            password = config[Key("database.password", stringType)]
-        ),
-        kafka = KafkaConfig(
-            brokers = config[Key("kafka.brokers", stringType)],
-            topic = config[Key("kafka.topic", stringType)]
-        ),
-        azure = AzureConfig(
-            clientId = config[Key("azure.client.id", stringType)],
-            issuer = config[Key("azure.issuer", stringType)],
-            jwksUri = config[Key("azure.jwks.uri", stringType)]
-        )
-    )
+    DEV("dev", Environment.Tier.DEV),
+    PROD("prod", Environment.Tier.PROD)
 }
 ```
 

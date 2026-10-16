@@ -172,11 +172,10 @@ Identifiser kildefiler fra problematiske elementer:
 
 1. **Selektor-basert søk**
    - Søk i kodebasen etter klassenavn eller ID
-   - Utforsk stildefinisjoner med `grep_search`
 
 2. **Komponent-basert søk**
    - Identifiser komponenter fra elementtekst eller struktur
-   - Utforsk relaterte filer med `semantic_search`
+   - Søk etter komponentnavnet for å finne relaterte filer
 
 3. **Filmønsterfiltrering**
    ```

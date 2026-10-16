@@ -160,13 +160,13 @@ class StringUtils {
             if (nationalId.length == 11) nationalId.take(6) + "*****" else nationalId
     }
 }
-val masked = StringUtils.maskNationalId(ident)
+val masked = StringUtils.maskNationalId(nationalId)
 
 // After — extension function
 fun String.maskNationalId(): String =
     if (length == 11) take(6) + "*****" else this
 
-val masked = ident.maskNationalId()
+val masked = nationalId.maskNationalId()
 
 // Before — complex conditional chain
 fun categorize(age: Int, status: String): String {
@@ -258,17 +258,17 @@ fun Route.userRoutes(userService: UserService) {
 ```java
 // JPA entity + repository
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class OrderEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String ident;
+    private String userId;
     private String status;
-    private LocalDate fom;
+    private LocalDate validFrom;
 }
 
 public interface OrderRepository extends CrudRepository<OrderEntity, Long> {
-    List<OrderEntity> findByIdent(String ident);
+    List<OrderEntity> findByUserId(String userId);
 }
 ```
 
@@ -276,22 +276,22 @@ public interface OrderRepository extends CrudRepository<OrderEntity, Long> {
 // Kotliquery — data class + repository
 data class Order(
     val id: Long,
-    val ident: String,
+    val userId: String,
     val status: String,
-    val fom: LocalDate,
+    val validFrom: LocalDate,
 )
 
 class OrderRepository(private val dataSource: DataSource) {
-    fun findByIdent(ident: String): List<Order> =
+    fun findByUserId(userId: String): List<Order> =
         using(sessionOf(dataSource)) { session ->
             session.run(
-                queryOf("SELECT * FROM order WHERE ident = ?", ident)
+                queryOf("SELECT * FROM orders WHERE user_id = ?", userId)
                     .map { row ->
                         Order(
                             id = row.long("id"),
-                            ident = row.string("ident"),
+                            userId = row.string("user_id"),
                             status = row.string("status"),
-                            fom = row.localDate("fom"),
+                            validFrom = row.localDate("valid_from"),
                         )
                     }.asList
             )
@@ -301,8 +301,8 @@ class OrderRepository(private val dataSource: DataSource) {
         using(sessionOf(dataSource)) { session ->
             session.run(
                 queryOf(
-                    "INSERT INTO order (ident, status, fom) VALUES (?, ?, ?)",
-                    order.ident, order.status, order.fom
+                    "INSERT INTO orders (user_id, status, valid_from) VALUES (?, ?, ?)",
+                    order.userId, order.status, order.validFrom
                 ).asUpdateAndReturnGeneratedKey
             ) ?: throw IllegalStateException("Failed to insert order")
         }
@@ -388,14 +388,14 @@ class UserServiceTest {
 @Builder
 @Slf4j
 public class Application {
-    private final String ident;
-    private final LocalDate innsendtDato;
+    private final String userId;
+    private final LocalDate receivedAt;
     @Builder.Default
-    private String status = "mottatt";
+    private String status = "received";
 
-    public void behandle() {
-        log.info("Processing application for {}", ident);
-        this.status = "behandlet";
+    public void process() {
+        log.info("Processing application for {}", userId);
+        this.status = "processed";
     }
 }
 ```
@@ -405,13 +405,13 @@ public class Application {
 private val logger = KotlinLogging.logger {}
 
 data class Application(
-    val ident: String,
-    val innsendtDato: LocalDate,
-    var status: String = "mottatt",
+    val userId: String,
+    val receivedAt: LocalDate,
+    var status: String = "received",
 ) {
-    fun behandle() {
-        logger.info { "Processing application for $ident" }
-        status = "behandlet"
+    fun process() {
+        logger.info { "Processing application for $userId" }
+        status = "processed"
     }
 }
 ```
@@ -474,10 +474,7 @@ Within each layer, convert leaf packages first (no internal dependencies), then 
 
 | Resource | Use For |
 |----------|---------|
-| `kotlin` instruction | Target patterns for Ktor and Spring Boot development |
 | `kotlin-app-config` skill | Sealed class configuration pattern |
-| `spring-boot-scaffold` skill | Scaffolding new Spring Boot services |
-| `flyway-migration` skill | Database migration patterns |
 
 ## Boundaries
 

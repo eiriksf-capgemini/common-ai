@@ -236,10 +236,10 @@ const jwtSecret = process.env.JWT_SECRET!
 
 ```kotlin
 // ❌ SQL injection via string interpolation
-queryOf("SELECT * FROM order WHERE status = '$status'")
+queryOf("SELECT * FROM orders WHERE status = '$status'")
 
 // ✅ Parameterized query
-queryOf("SELECT * FROM order WHERE status = ?", status)
+queryOf("SELECT * FROM orders WHERE status = ?", status)
 ```
 
 ### Go
@@ -256,21 +256,21 @@ exec.Command("journalctl", "-u", service).Run()
 
 ```java
 // ❌ SQL injection in JdbcTemplate
-jdbcTemplate.query("SELECT * FROM order WHERE nationalId = '" + nationalId + "'", rowMapper);
+jdbcTemplate.query("SELECT * FROM orders WHERE nationalId = '" + nationalId + "'", rowMapper);
 
 // ✅ Prepared parameters in JdbcTemplate
-jdbcTemplate.query("SELECT * FROM order WHERE nationalId = ?", rowMapper, nationalId);
+jdbcTemplate.query("SELECT * FROM orders WHERE nationalId = ?", rowMapper, nationalId);
 ```
 
 ### Node.js / Next.js
 
 ```ts
 // ❌ Raw SQL and unsanitized user HTML
-await prisma.$queryRawUnsafe(`SELECT * FROM order WHERE nationalId = '${nationalId}'`)
+await prisma.$queryRawUnsafe(`SELECT * FROM orders WHERE nationalId = '${nationalId}'`)
 return <div dangerouslySetInnerHTML={{ __html: kommentar }} />
 
 // ✅ Parameterize SQL and sanitize rendered content
-await prisma.$queryRaw`SELECT * FROM order WHERE nationalId = ${nationalId}`
+await prisma.$queryRaw`SELECT * FROM orders WHERE nationalId = ${nationalId}`
 return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(kommentar) }} />
 ```
 

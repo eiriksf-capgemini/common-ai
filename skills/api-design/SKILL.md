@@ -139,15 +139,14 @@ data class CreateOrderRequest(
     @field:NotBlank(message = "Title is required")
     val title: String,
 
-    @field:Size(min = 11, max = 11, message = "National ID must be 11 digits")
-    @field:Pattern(regexp = "\\d{11}", message = "National ID must consist of digits")
-    val nationalId: String,
+    @field:Email(message = "Email must be a valid address")
+    val email: String,
 
     @field:Positive(message = "Amount must be positive")
     val amount: BigDecimal,
 
     @field:NotNull(message = "Start date is required")
-    val fom: LocalDate,
+    val startDate: LocalDate,
 )
 ```
 
@@ -189,12 +188,12 @@ Use URL-based versioning when breaking changes are necessary:
 ```kotlin
 // v1 — original
 @RestController
-@RequestMapping("/api/v1/order")
+@RequestMapping("/api/v1/orders")
 class OrderV1Controller
 
-// v2 — ny kontrakt
+// v2 — new contract
 @RestController
-@RequestMapping("/api/v2/order")
+@RequestMapping("/api/v2/orders")
 class OrderV2Controller
 ```
 

@@ -110,7 +110,7 @@ export const test = base.extend<AuthFixtures>({
     // Set auth cookie for test environment
     await context.addCookies([
       {
-        name: "selvbetjening-idtoken",
+        name: "id_token",
         value: process.env.TEST_TOKEN ?? "test-token",
         domain: "localhost",
         path: "/",
@@ -228,23 +228,33 @@ test.describe("Accessibility", () => {
 
 ```yaml
 # .github/workflows/e2e.yml
-e2e:
-  runs-on: ubuntu-latest
-  timeout-minutes: 10
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: pnpm
-    - run: pnpm install --frozen-lockfile
-    - run: pnpm exec playwright install --with-deps chromium
-    - run: pnpm exec playwright test
-    - uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: playwright-report
-        path: playwright-report/
+name: e2e
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
 ```
 
 ## Locator Strategies
@@ -258,7 +268,7 @@ page.getByRole("heading", { level: 1 });
 page.getByRole("link", { name: /oversikt/i });
 
 // 2. ✅ Label-based (for form elements)
-page.getByLabel("Fødselsnummer");
+page.getByLabel("National ID");
 page.getByPlaceholder("Søk...");
 
 // 3. ✅ Text-based (for static content)

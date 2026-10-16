@@ -164,8 +164,8 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let app = Router::new()
-        .route("/isalive", get(|| async { "Alive" }))
-        .route("/isready", get(|| async { "Ready" }));
+        .route("/healthz", get(|| async { "Alive" }))
+        .route("/readyz", get(|| async { "Ready" }));
 
     let listener = TcpListener::bind("0.0.0.0:8080").await?;
     tracing::info!("listening on {}", listener.local_addr()?);

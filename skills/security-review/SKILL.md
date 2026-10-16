@@ -15,7 +15,7 @@ For architecture questions, threat modeling, or compliance decisions, involve a 
 
 ## Automated Scans
 
-Run with `run_in_terminal`:
+Run in a terminal:
 
 ```bash
 # Scan repo for known vulnerabilities and secrets
@@ -38,7 +38,7 @@ git log -p --all -S 'secret' -- '*.kt' '*.ts' | head -100
 // ✅ Correct – parameterized query
 fun findUser(nationalId: String): User? =
     jdbcTemplate.queryForObject(
-        "SELECT * FROM user WHERE nationalId = ?",
+        "SELECT * FROM users WHERE nationalId = ?",
         userRowMapper,
         nationalId
     )
@@ -46,7 +46,7 @@ fun findUser(nationalId: String): User? =
 // ❌ Wrong – SQL injection risk
 fun findUserUnsafe(nationalId: String): User? =
     jdbcTemplate.queryForObject(
-        "SELECT * FROM user WHERE nationalId = '$nationalId'",
+        "SELECT * FROM users WHERE nationalId = '$nationalId'",
         userRowMapper
     )
 ```
@@ -129,10 +129,10 @@ fun getOrder(@PathVariable id: UUID) = orderService.findById(id)
 
 ```kotlin
 // ✅ Correct — parameterized query
-jdbcTemplate.query("SELECT * FROM user WHERE nationalId = ?", mapper, nationalId)
+jdbcTemplate.query("SELECT * FROM users WHERE nationalId = ?", mapper, nationalId)
 
 // ❌ Wrong — string concatenation
-jdbcTemplate.query("SELECT * FROM user WHERE nationalId = '$nationalId'", mapper)
+jdbcTemplate.query("SELECT * FROM users WHERE nationalId = '$nationalId'", mapper)
 ```
 
 ### A05: Security Misconfiguration
@@ -154,7 +154,7 @@ allowedOrigins = listOf("*")
 
 ```tsx
 // ✅ Correct — React escapes automatically
-<BodyShort>{user.navn}</BodyShort>
+<p>{user.name}</p>
 
 // ❌ Wrong — raw HTML injection
 <div dangerouslySetInnerHTML={{ __html: userInput }} />

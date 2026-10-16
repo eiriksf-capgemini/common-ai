@@ -38,6 +38,8 @@ If none of the platform pieces exist, the quickest local setup for development i
 
 ## Required Health Endpoints
 
+The paths `/healthz` and `/readyz` are a convention; any pair works as long as the Kubernetes probes use the same paths.
+
 ```kotlin
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -49,11 +51,11 @@ fun Application.configureHealthEndpoints(
     kafkaProducer: KafkaProducer<String, String>
 ) {
     routing {
-        get("/isalive") {
+        get("/healthz") {
             call.respondText("Alive", ContentType.Text.Plain)
         }
 
-        get("/isready") {
+        get("/readyz") {
             val databaseHealthy = checkDatabase(dataSource)
             val kafkaHealthy = checkKafka(kafkaProducer)
 
@@ -251,14 +253,15 @@ spec:
         - name: my-app
           image: ghcr.io/{org}/my-app:latest
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
           env:
             - name: OTEL_SERVICE_NAME
               value: my-app
             # OTEL_EXPORTER_OTLP_ENDPOINT is set by the operator; set it explicitly if you bundle the agent yourself
           livenessProbe:
             httpGet:
-              path: /isalive
+              path: /healthz
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -266,7 +269,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /isready
+              path: /readyz
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -398,12 +401,11 @@ fun main() {
     // Run database migrations
     runMigrations(dataSource)
 
-    // Setup metrics
-    val meterRegistry = setupMetrics()
+    val kafkaProducer = createKafkaProducer(env.kafkaBrokers)
 
     embeddedServer(Netty, port = 8080) {
-        configureHealthEndpoints(dataSource)
-        configureMetrics(meterRegistry)
+        configureHealthEndpoints(dataSource, kafkaProducer)
+        configureMetrics()  // uses the top-level meterRegistry
         configureRouting(dataSource, meterRegistry)
     }.start(wait = true)
 }
@@ -471,8 +473,8 @@ See [references/grafana-queries.md](references/grafana-queries.md) for PromQL da
 
 ## Monitoring Checklist
 
-- [ ] `/isalive` endpoint implemented
-- [ ] `/isready` endpoint with dependency checks (database, Kafka)
+- [ ] `/healthz` endpoint implemented
+- [ ] `/readyz` endpoint with dependency checks (database, Kafka)
 - [ ] `/metrics` endpoint exposing Prometheus metrics
 - [ ] Liveness and readiness probes configured in the Deployment
 - [ ] Business metrics instrumented (counters, timers, gauges)

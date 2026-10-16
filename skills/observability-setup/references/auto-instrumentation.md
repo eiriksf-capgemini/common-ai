@@ -48,7 +48,9 @@ The operator injects the agent via an init container and sets `OTEL_*` environme
 **Option B: Bundle the agent in the image.**
 
 ```dockerfile
-ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /otel/javaagent.jar
+# Pin the agent version; bump it deliberately rather than tracking latest
+ARG OTEL_AGENT_VERSION=2.20.1
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_AGENT_VERSION}/opentelemetry-javaagent.jar /otel/javaagent.jar
 ENV JAVA_TOOL_OPTIONS="-javaagent:/otel/javaagent.jar"
 ENV OTEL_SERVICE_NAME=my-app
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.observability:4317
@@ -81,11 +83,11 @@ processors:
     error_mode: ignore
     traces:
       span:
-        - 'attributes["url.path"] == "/isalive"'
-        - 'attributes["url.path"] == "/isready"'
+        - 'attributes["url.path"] == "/healthz"'
+        - 'attributes["url.path"] == "/readyz"'
         - 'attributes["url.path"] == "/metrics"'
         - 'IsMatch(attributes["url.path"], ".*/actuator/.*")'
         - 'IsMatch(attributes["url.path"], ".*/internal/(health|status).*")'
 ```
 
-Alternatively, exclude them at the agent: `OTEL_INSTRUMENTATION_HTTP_SERVER_... ` options vary by version, so the collector filter is the portable choice.
+Alternatively, the Java agent can exclude them itself, but the exclusion options vary by agent version, so the collector filter is the portable choice.

@@ -141,10 +141,10 @@ val hashed = BCrypt.hashpw(password, BCrypt.gensalt(12))
 
 ```kotlin
 // ❌ SQL injection via string template
-session.run(queryOf("SELECT * FROM order WHERE status = '$status'").map { ... }.asList)
+session.run(queryOf("SELECT * FROM orders WHERE status = '$status'").map { ... }.asList)
 
 // ✅ Parameterized query (Kotliquery)
-session.run(queryOf("SELECT * FROM order WHERE status = ?", status).map { ... }.asList)
+session.run(queryOf("SELECT * FROM orders WHERE status = ?", status).map { ... }.asList)
 ```
 
 ```go
@@ -246,7 +246,6 @@ fun process(data: String): Result {
 | Resource | Use For |
 |----------|---------|
 | `security-review` skill | Pre-commit scanning (trivy, zizmor, govulncheck) |
-| `threat-model` skill | STRIDE-A analysis for new services |
 | [OWASP Top 10:2025](https://owasp.org/Top10/2025/) | Official category descriptions |
 | [OWASP Go SCP](https://owasp.org/www-project-go-secure-coding-practices/) | Go-specific secure coding guide |
 | [OWASP CI/CD Top 10](https://owasp.org/www-project-top-10-ci-cd-security-risks/) | Pipeline security risks |
