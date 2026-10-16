@@ -57,7 +57,7 @@ fun findUserUnsafe(nationalId: String): User? =
 // ✅ Correct – log correlation ID, not PII
 log.info("Processing case for user", kv("caseId", case.id), kv("topic", case.topic))
 
-// ❌ Wrong – never log FNR, name, or other PII
+// ❌ Wrong – never log national ID, name, or other PII
 log.info("Processing case for user ${user.nationalId}")  // GDPR violation
 log.info("Name: ${user.name}")                            // GDPR violation
 ```
