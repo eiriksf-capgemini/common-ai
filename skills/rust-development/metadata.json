@@ -1,0 +1,29 @@
+{
+  "description": "Idiomatic Rust development with cargo, clippy, error handling, async/tokio, unsafe and testing",
+  "domain": "backend",
+  "tags": [
+    "rust",
+    "cargo",
+    "clippy",
+    "async",
+    "tokio"
+  ],
+  "examples": [
+    {
+      "prompt": "Set up a new Rust project with recommended lints",
+      "scenario": "Project setup with Cargo.toml and rustfmt"
+    },
+    {
+      "prompt": "Set up error handling with thiserror and anyhow",
+      "scenario": "Error handling for library and application"
+    },
+    {
+      "prompt": "Build an async HTTP service with axum and tokio",
+      "scenario": "Web service with graceful shutdown"
+    },
+    {
+      "prompt": "Review my unsafe code",
+      "scenario": "Unsafe code review"
+    }
+  ]
+}

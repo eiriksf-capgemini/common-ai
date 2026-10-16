@@ -1,0 +1,22 @@
+{
+  "description": "Step-by-step Java-to-Kotlin migration with framework-aware transformations for Spring and Ktor",
+  "domain": "backend",
+  "tags": [
+    "kotlin",
+    "java",
+    "migration",
+    "refactoring",
+    "ktor",
+    "spring"
+  ],
+  "examples": [
+    {
+      "prompt": "Convert UserService.java to idiomatic Kotlin with Ktor patterns",
+      "scenario": "Single-file migration"
+    },
+    {
+      "prompt": "Make a plan for migrating our legacy service from Java to Kotlin",
+      "scenario": "Full migration planning"
+    }
+  ]
+}

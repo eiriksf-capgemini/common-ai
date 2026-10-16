@@ -1,0 +1,33 @@
+{
+  "description": "PostgreSQL query review, optimisation and best practices for backend applications",
+  "domain": "backend",
+  "tags": [
+    "postgresql",
+    "sql",
+    "optimization",
+    "review",
+    "indexing"
+  ],
+  "examples": [
+    {
+      "scenario": "Performance review",
+      "prompt": "Review this SQL query for performance"
+    },
+    {
+      "scenario": "Optimisation",
+      "prompt": "Optimise a slow PostgreSQL query"
+    },
+    {
+      "scenario": "Indexing",
+      "prompt": "Suggest indexes for this table"
+    },
+    {
+      "scenario": "N+1 problem",
+      "prompt": "Check for N+1 query problems"
+    },
+    {
+      "scenario": "JSONB patterns",
+      "prompt": "Review our use of JSONB"
+    }
+  ]
+}

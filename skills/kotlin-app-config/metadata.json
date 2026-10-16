@@ -1,0 +1,13 @@
+{
+  "description": "Sealed-class configuration for Kotlin applications with environment-specific settings",
+  "domain": "backend",
+  "tags": [
+    "kotlin",
+    "configuration",
+    "sealed-class",
+    "environment"
+  ],
+  "examples": [
+    "Set up environment configuration with sealed classes for dev, prod and local"
+  ]
+}
