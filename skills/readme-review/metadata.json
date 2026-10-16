@@ -1,0 +1,20 @@
+{
+  "description": "Structural review and generation of READMEs adapted to project type: service, library, monorepo or batch job",
+  "domain": "general",
+  "tags": ["readme", "documentation", "review", "scaffold"],
+  "references": [
+    "references/section-spec.md",
+    "references/anti-patterns.md",
+    "references/template-service.md",
+    "references/template-library.md",
+    "references/template-monorepo.md",
+    "references/template-batch-job.md"
+  ],
+  "examples": [
+    "Review our README and suggest improvements",
+    "Create a README for this service",
+    "Check whether the README is missing important sections",
+    "Generate a README for this scheduled job",
+    "Gå gjennom README-en vår og foreslå forbedringer"
+  ]
+}
