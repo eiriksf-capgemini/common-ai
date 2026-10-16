@@ -1,0 +1,19 @@
+{
+  "description": "Give coding agents their own GitHub identity via a GitHub App, so bot-authored commits and PRs are attributed to <app>[bot] and reviewer and author are different principals",
+  "domain": "delivery",
+  "tags": [
+    "github",
+    "github-app",
+    "identity",
+    "agents",
+    "security"
+  ],
+  "references": [
+    "gh-app-token.mjs"
+  ],
+  "examples": [
+    "Set up a separate GitHub identity for agents on this repo",
+    "Agents should not commit as me",
+    "The review pipeline says author equals reviewer"
+  ]
+}
