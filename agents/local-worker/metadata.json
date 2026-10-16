@@ -1,0 +1,27 @@
+{
+  "description": "Runs small, scoped tasks on the cheapest available model (Haiku)",
+  "domain": "general",
+  "tags": [
+    "sub-agent",
+    "cost",
+    "local"
+  ],
+  "files": {
+    "claude-code": "local-worker.md",
+    "copilot": "local-worker.agent.md"
+  },
+  "examples": [
+    {
+      "prompt": "Add a KDoc comment to daysBetween in DateUtil.kt",
+      "scenario": "Scoped change in one file"
+    },
+    {
+      "prompt": "Which file and line reads API_BASE_URL?",
+      "scenario": "Lookup without a change"
+    },
+    {
+      "prompt": "Rename isEmailValid to isValidEmail everywhere",
+      "scenario": "Rename across call sites"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "description": "Carries out one scoped, pre-planned change from a brief and reports back",
+  "domain": "general",
+  "tags": [
+    "sub-agent",
+    "delegation",
+    "cost"
+  ],
+  "files": {
+    "claude-code": "worker.md",
+    "copilot": "worker.agent.md"
+  },
+  "examples": [
+    {
+      "prompt": "Task: add the field orderType to Order. Files: src/main/kotlin/Order.kt. Change: new field with default STANDARD. Check: ./gradlew test. Stop: if other files need changes.",
+      "scenario": "Scoped change from a brief"
+    }
+  ]
+}

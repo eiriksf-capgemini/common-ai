@@ -1,0 +1,28 @@
+{
+  "description": "Read-only codebase investigator: explores structure, traces usages, reads git history and external docs, and reports findings with confidence levels",
+  "domain": "general",
+  "tags": [
+    "research",
+    "analysis",
+    "codebase-exploration",
+    "read-only"
+  ],
+  "files": {
+    "claude-code": "research.md",
+    "copilot": "research.agent.md"
+  },
+  "examples": [
+    {
+      "prompt": "Find every place we still use the deprecated Kafka API",
+      "scenario": "Codebase analysis"
+    },
+    {
+      "prompt": "Investigate how error handling works in the checkout flow",
+      "scenario": "Pattern investigation"
+    },
+    {
+      "prompt": "Why was the retry logic in PaymentClient written this way?",
+      "scenario": "Historical context"
+    }
+  ]
+}
