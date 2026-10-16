@@ -6,7 +6,7 @@
 *.key
 *.p12
 *.pfx
-*credentials*
+*credentials*.json
 service-account*.json
 secret*.yaml
 secrets*.yaml
@@ -15,8 +15,6 @@ kubeconfig.yaml
 
 # Dependencies and build artifacts
 node_modules/
-dist/
-build/
 __pycache__/
 *.pyc
 
@@ -41,5 +39,5 @@ Thumbs.db
 .claude/settings.local.json
 .mcp.json
 
-# GitHub App identity for agents (see skills/github-app-agent-identity)
+# GitHub App identity for agents
 .gh-app-identity.json

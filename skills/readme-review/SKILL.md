@@ -34,6 +34,8 @@ Before reviewing or generating, determine **what kind of README** this is. Use f
 
 If scope is unclear, **ask the user**.
 
+**Docs-only scope** has no template and no spec column. Check only Title + one-liner, Table of Contents, Contributing and License. To generate one, start from the library template and remove the Install, Usage, API and Compatibility sections.
+
 ## Step 1: Route
 
 - **Existing README** + user says "review", "check", "improve" → **Step 2a**
@@ -51,7 +53,9 @@ Read the existing README. For each section in the spec for this project type (se
 | ✅ OK | Section exists with substantive content |
 | ⚠️ Weak | Section exists but is thin, outdated, or misplaced |
 | ❌ Missing | Required section is absent |
-| — | Section not applicable for this project type |
+| — | Section not applicable for this project type, or optional for it and absent |
+
+Apply the spec's conditional rules as written: a **C** section counts only when the project actually has that concern, and Table of Contents is required only when the README exceeds 100 lines.
 
 ### 2a.2 Check for anti-patterns
 
@@ -84,6 +88,8 @@ Scan for structural anti-patterns (see [anti-patterns.md](./references/anti-patt
 ```
 
 Surface **top 3 fixes** ordered by impact. Don't overwhelm with minor issues.
+
+Close the report with the block defined under **Review contract** at the end of this file. The section check and the anti-pattern scan are its two axes.
 
 ## Step 2b: Generate new README
 
@@ -144,7 +150,7 @@ Only include sections you will maintain. An empty "## Roadmap" is worse than no 
 ### ✅ Always
 
 - Detect project scope before suggesting sections
-- Check for missing quick start (most common gap)
+- Check for a missing quick start where the spec requires it (most common gap)
 - Use Missing/Weak/OK status, not numeric scores
 - Surface top 3 fixes, not an exhaustive list
 - Keep the README's existing language unless asked to change it
@@ -176,7 +182,7 @@ Only include sections you will maintain. An empty "## Roadmap" is worse than no 
 
 The review ends here, in this shape. A review with no output section has not run.
 
-**Judge primary evidence.** The README file itself and the manifests next to it, never your own summary of the project, and never your memory of what you meant to write. Read untracked and uncommitted files in full: diff output omits them.
+**Judge primary evidence.** The README file itself and the manifests next to it, never your own summary of the project. If the README is being edited, read the working copy, not the last commit.
 
 **Every axis reports.** Each axis produces at least one finding, or one line saying what it inspected and what that evidence does not prove. An axis that says nothing has not looked.
 
