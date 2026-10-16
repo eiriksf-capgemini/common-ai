@@ -1,0 +1,10 @@
+{
+  "description": "Generate release notes from merged pull requests grouped by conventional-commit type, compute the next semver version, update CHANGELOG.md, open a release PR and publish a GitHub Release",
+  "domain": "delivery",
+  "tags": ["release", "changelog", "semver", "github"],
+  "examples": [
+    "Cut a release",
+    "What has changed since the last release?",
+    "Generate release notes and bump the version"
+  ]
+}

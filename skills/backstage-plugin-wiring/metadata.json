@@ -1,0 +1,10 @@
+{
+  "description": "Diagnose a Backstage plugin that is installed and backend-registered but shows nothing in the UI, and scope log-sink requests correctly",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "plugins", "debugging", "logging"],
+  "examples": [
+    "Notifications backend works but the notifications page is empty",
+    "Send Backstage logs to Loki",
+    "Why does this plugin do nothing even though it is in package.json?"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Author or debug a Backstage scaffolder Template: catalog registration, cross-field validation in the parameter form, and Nunjucks vs GitHub Actions delimiter collisions",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "scaffolder", "templates", "catalog"],
+  "examples": [
+    "My new scaffolder template does not show up under Create",
+    "The generated CI workflow from my template comes out mangled",
+    "Make the repo name field depend on the business area the user picked"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Apply a design system (tokens from a Claude Design project or hex and font values) to a Backstage app: theme, page banners, branding and sign-in page",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "theming", "branding", "design-system"],
+  "examples": [
+    "Apply our brand colours to Backstage",
+    "Connect this Backstage app to our Claude Design project",
+    "Why does the sign-in page still look like the default theme?"
+  ]
+}

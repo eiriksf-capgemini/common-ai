@@ -1,0 +1,10 @@
+{
+  "description": "Build or fix a Backstage landing page on the new frontend system, including custom widgets and layout",
+  "domain": "platform-engineering",
+  "tags": ["backstage", "homepage", "frontend"],
+  "examples": [
+    "Add a homepage with quick links to our templates",
+    "The Backstage home page says no widgets added",
+    "Make / show the dashboard instead of the catalog"
+  ]
+}
