@@ -29,7 +29,7 @@ This repo holds no manifests.
 
 ## Observability
 
-- **Metrics:** `/metrics` (Prometheus format), scraped by Azure Monitor managed Prometheus via pod annotations.
+- **Metrics:** `/metrics` (Prometheus format), scraped by Azure Monitor managed Prometheus via pod annotations. {Delete this line if the app has no metrics endpoint yet.}
 - **Dashboards:** Azure portal → Monitor → Dashboards with Grafana (Entra ID login).
 - **Logs:** `kubectl -n {namespace} logs deploy/{app}`; no central log store yet.
 - **Health:** `{liveness_path}` (liveness), `{readiness_path}` (readiness).

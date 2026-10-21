@@ -1,6 +1,10 @@
 # Platform profile: cloud-infra on Azure (AKS + Argo CD + ACR)
 
 Platform repo: `github.com/eiriksf-capgemini/cloud-infra` (public). Local default: `~/code/cloud-infra`.
+
+**Recognise it by:** `gitops/apps/README.md` describing `<namespace>/<app>/{base,overlays/<env>}`, a
+`gitops/clusters/<cluster>/templates/workloads-applicationset.yaml`, and `live/<cloud>/<env>/25-registry`.
+Forks and renamed copies that keep this shape use this profile.
 Authoritative documents inside it, read them before this file when they disagree:
 `README.md`, `gitops/apps/README.md`, `docs/adr/0005` (layout), `0006` (registry), `0007` (namespaces),
 `0008` (metrics), `0009` (access control), `docs/runbooks/`.
@@ -31,11 +35,11 @@ Authoritative documents inside it, read them before this file when they disagree
 | Node headroom | `kubectl describe node \| grep -A6 'Allocated resources'` |
 | Quota headroom | `kubectl -n <ns> describe resourcequota` |
 | kubeconfig | `make output STACK=live/azure/poc/20-cluster` → `get_credentials_command` (`az aks get-credentials ... && kubelogin convert-kubeconfig -l azurecli`) |
-| Cluster power state | `make aks-status`; start with `make aks-start` (a few minutes) |
+| Cluster power state | `make aks-status` **first**; start with `make aks-start` (a few minutes). Stopped cluster = `kubectl` hangs |
 
-Known as of 2026-10-21, to be re-verified: namespaces `demo`, `sogeti`, `invent`, `i-and-d`, `platform`;
-dev quota in `demo` is 1 CPU / 1 Gi / 10 pods of requests; LimitRange defaults 10m / 32Mi requests and
-256Mi memory limit; PSA enforce `baseline`, warn and audit `restricted`. Reference app: `demo/podinfo`.
+Reference app: `demo/podinfo` (namespace `demo`); its dev ingress is the Git fallback for the ingress IP
+when the cluster is stopped. Quotas are deliberately small and per namespace; read the quota file before
+sizing, do not reuse numbers from a previous run.
 
 ## Registry
 
@@ -76,8 +80,9 @@ so delete old tags occasionally (`az acr repository delete`).
 - Application pods are scraped by **annotation** (`prometheus.io/scrape: "true"`, `prometheus.io/port`,
   `prometheus.io/path`) in the workload namespaces listed in
   `gitops/platform/azure-monitor-metrics/configmap.yaml` (`podannotationnamespaceregex`).
-- Status 2026-10-21: that stack is draft PR #2 (`feat/azure-managed-prometheus`), add-on currently **off**.
-  Annotations are no-ops until it merges. Check: `az aks show -g rg-cloudinfra-poc -n aks-cloudinfra-poc --query azureMonitorProfile.metrics.enabled`.
+- Whether scraping is live changes over time (as of 2026-10-21 it was still a draft PR and the add-on was off).
+  Check, do not assume: `az aks show -g rg-cloudinfra-poc -n aks-cloudinfra-poc --query azureMonitorProfile.metrics.enabled`
+  and whether `gitops/platform/azure-monitor-metrics/` exists on `main`. Annotations are no-ops while it is off.
 - Logs: no Container insights, no log shipper. `kubectl logs` only.
 - Details for instrumenting the app: `observability-setup` skill, `references/azure-monitor-managed-prometheus.md`.
 
