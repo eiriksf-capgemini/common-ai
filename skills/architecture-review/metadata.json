@@ -1,0 +1,17 @@
+{
+  "description": "Generate or review an Architecture Decision Record (ADR) with a multi-perspective review: architecture, security, platform & cost, and migration. Adapts to the repo's existing ADR conventions.",
+  "domain": "general",
+  "tags": ["architecture", "adr", "review", "planning", "decision-record"],
+  "references": [
+    "references/adr-template.md",
+    "references/default-principles.md",
+    "references/tech-debt-assessment.md"
+  ],
+  "examples": [
+    "Write an ADR for switching from REST to Kafka for order events",
+    "Review docs/adr/0009-network-access.md and challenge the alternatives",
+    "Document the decision to move Argo CD into the platform namespace as an ADR",
+    "Assess the technical debt in this service and prioritise it",
+    "Skriv en ADR for valget av OpenTofu fremfor Terraform"
+  ]
+}
