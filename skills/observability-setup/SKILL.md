@@ -34,6 +34,8 @@ implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
 implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
 ```
 
+On AKS with the **Azure Monitor managed Prometheus** add-on, the metrics and dashboard rows look different (annotation scraping per allow-listed namespace, `azmonitoring.coreos.com` CRDs, no `PrometheusRule`, portal Grafana): see [references/azure-monitor-managed-prometheus.md](references/azure-monitor-managed-prometheus.md) before writing any monitor or rule objects.
+
 If none of the platform pieces exist, the quickest local setup for development is the Grafana LGTM all-in-one image (`docker run -p 3000:3000 -p 4317:4317 -p 4318:4318 grafana/otel-lgtm`), which bundles Grafana, Loki, Tempo, Mimir and a collector.
 
 ## Required Health Endpoints
@@ -283,7 +285,7 @@ spec:
               memory: 512Mi
 ```
 
-If you run the Prometheus Operator, add a `PodMonitor` instead of relying on annotations:
+If you run the Prometheus Operator, add a `PodMonitor` instead of relying on annotations. Check that the CRD exists first (`kubectl get crd podmonitors.monitoring.coreos.com`); on Azure managed Prometheus the group is `azmonitoring.coreos.com/v1` and annotations are usually enough (see the Azure reference):
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
@@ -304,7 +306,7 @@ Logs go to stdout as JSON. The platform's log shipper picks them up; the applica
 
 ## Alert Configuration
 
-With the Prometheus Operator, alerts are `PrometheusRule` resources. Routing to a chat channel is done in Alertmanager (or Grafana Alerting), not in the rule.
+With the Prometheus Operator, alerts are `PrometheusRule` resources. Routing to a chat channel is done in Alertmanager (or Grafana Alerting), not in the rule. There is no `PrometheusRule` CRD on Azure managed Prometheus; the same expressions go into an Azure `prometheusRuleGroups` resource in the platform's OpenTofu (see the Azure reference).
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
@@ -500,3 +502,4 @@ See [references/production-patterns.md](references/production-patterns.md) for p
 - [references/auto-instrumentation.md](references/auto-instrumentation.md): what the OpenTelemetry agent covers, how to enable it on Kubernetes, sensitive-data masking, and filtering noisy health-check traces.
 - [references/alerting.md](references/alerting.md): raw Prometheus alert-rule schema, alerting practice, and a common alert catalogue (availability, memory, DB pool, Kafka lag, DORA).
 - [references/typescript.md](references/typescript.md): Grafana Faro for frontends and `prom-client` metrics in Next.js API routes.
+- [references/azure-monitor-managed-prometheus.md](references/azure-monitor-managed-prometheus.md): what differs on AKS with the managed add-on: annotation scraping per namespace allow-list, `azmonitoring.coreos.com` monitors, rule groups as Azure resources, portal Grafana, per-sample cost.
