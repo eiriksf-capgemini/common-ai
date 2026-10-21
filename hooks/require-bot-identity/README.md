@@ -16,17 +16,23 @@ when the command runs in a `git worktree`. Repositories without that file are un
 
 ## Install (user scope)
 
+Idempotent: safe to re-run after updating the script.
+
 ```sh
 mkdir -p ~/.claude/hooks
 cp hooks/require-bot-identity/require-bot-identity.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/require-bot-identity.sh
-# merge the hook into settings.json (keeps everything else; appends to an existing PreToolUse list)
-jq -s '.[0] * {hooks: ((.[0].hooks // {}) * {PreToolUse: ((.[0].hooks.PreToolUse // []) + .[1].hooks.PreToolUse)})}' \
-  ~/.claude/settings.json hooks/require-bot-identity/require-bot-identity.hook.json > ~/.claude/settings.json.new \
-  && mv ~/.claude/settings.json.new ~/.claude/settings.json
-cat hooks/require-bot-identity/global-claude-md-snippet.md >> ~/.claude/CLAUDE.md
+[ -f ~/.claude/settings.json ] || echo '{}' > ~/.claude/settings.json
+if jq -e '[.hooks.PreToolUse[]?.hooks[]?.command // "" | select(test("require-bot-identity"))] | length > 0' ~/.claude/settings.json >/dev/null; then
+  echo "hook already registered"
+else
+  jq -s '.[0] * {hooks: ((.[0].hooks // {}) * {PreToolUse: ((.[0].hooks.PreToolUse // []) + .[1].hooks.PreToolUse)})}' \
+    ~/.claude/settings.json hooks/require-bot-identity/require-bot-identity.hook.json > ~/.claude/settings.json.new \
+    && mv ~/.claude/settings.json.new ~/.claude/settings.json && echo "hook registered"
+fi
+grep -q '^## Git identity for agents' ~/.claude/CLAUDE.md 2>/dev/null || cat hooks/require-bot-identity/global-claude-md-snippet.md >> ~/.claude/CLAUDE.md
 ```
 
-Restart the Claude Code session; hooks are read at start.
+Restart the Claude Code session; hooks are read at start. Updating the script later is the `cp` line alone.
 
 ## Test
 
@@ -39,6 +45,9 @@ printf '{"tool_input":{"command":"eval \\"$(node scripts/gh-app-token.mjs --env)
 
 ## Limits
 
-The hook inspects the command text, not the process environment: a token exported in an earlier tool
-call is invisible to it and would be blocked (re-run the eval; it is cheap). It does not verify the PR
-author after the fact; the agent instruction in the snippet does.
+- The hook inspects the command text, not the process environment. A token exported in an earlier tool call, or a `GH_TOKEN` from the environment, is invisible to it and the call is blocked; re-run the eval in the command (it is cheap, one HTTPS request).
+- Command words are matched after removing quoted strings, so a commit message that mentions `git push` is not a trigger; a push hidden inside `sh -c "..."` or a script file is not seen either.
+- A leading `cd <dir> &&` is honoured for locating the repository; a `cd` later in the command is not.
+- Pushes must name an `https://` URL in the push segment itself. `git push origin` is blocked even when `origin` happens to be HTTPS.
+- Without `jq` the hook refuses push and PR commands rather than silently allowing them.
+- It does not verify the PR author after the fact; the agent instruction in the snippet does.
