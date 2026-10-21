@@ -15,11 +15,14 @@
     "references/tracing-and-logging.md",
     "references/auto-instrumentation.md",
     "references/alerting.md",
-    "references/typescript.md"
+    "references/typescript.md",
+    "references/azure-monitor-managed-prometheus.md"
   ],
   "examples": [
     "Set up Prometheus metrics and health endpoints for the order service",
     "Add OpenTelemetry tracing to our Ktor app",
-    "Why don't my logs show a trace_id?"
+    "Why don't my logs show a trace_id?",
+    "Expose metrics from our app on the AKS cluster with Azure Monitor managed Prometheus",
+    "Why does my PodMonitor fail to apply on AKS?"
   ]
 }

@@ -55,6 +55,19 @@ Each customization has its own documentation in the table below.
 
 Keep each customization self-contained, and never commit secrets.
 
+### Pull requests from agents
+
+Agents (Claude Code, Copilot coding agent) open PRs as **`hal9000-agent-bot[bot]`**, not as the human whose machine they run on, so the PR author and the reviewer are different principals. The identity is a GitHub App installed on this repo; the gitignored `.gh-app-identity.json` at the repo root points at its private key. Before every commit, push or `gh pr create`, mint a token in the same shell call (shell state does not survive between agent tool calls):
+
+```sh
+eval "$(node scripts/gh-app-token.mjs --env)"          # sets GH_TOKEN and the bot's git author/committer, valid 1 h
+git push https://github.com/eiriksf-capgemini/common-ai.git HEAD:<branch>   # HTTPS: the SSH remote ignores the token
+gh pr create --draft --title ... --body ...
+gh pr view --json author -q .author.login                 # must print app/hal9000-agent-bot
+```
+
+A PR that shows a human author was opened without the token; close it and open it again. Setup for a new repo or machine: [skills/github-app-agent-identity](skills/github-app-agent-identity/SKILL.md).
+
 ---
 
 <sub>Inspired by <a href="https://github.com/navikt/copilot">navikt/copilot</a>. Thanks to NAV IT for showing how to do this well.</sub>
