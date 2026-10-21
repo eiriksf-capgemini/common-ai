@@ -60,7 +60,7 @@ Keep each customization self-contained, and never commit secrets.
 Agents (Claude Code, Copilot coding agent) open PRs as **`hal9000-agent-bot[bot]`**, not as the human whose machine they run on, so the PR author and the reviewer are different principals. The identity is a GitHub App installed on this repo; the gitignored `.gh-app-identity.json` at the repo root points at its private key. Before every commit, push or `gh pr create`, mint a token in the same shell call (shell state does not survive between agent tool calls):
 
 ```sh
-eval "$(node scripts/gh-app-token.mjs --env)"          # sets GH_TOKEN and the bot's git author/committer, valid 1 h
+eval "$(node scripts/gh-app-token.mjs --env)"          # GH_TOKEN, the bot's git author/committer and a shell-scoped git credential helper for github.com; valid 1 h
 git push https://github.com/eiriksf-capgemini/common-ai.git HEAD:<branch>   # HTTPS: the SSH remote ignores the token
 gh pr create --draft --title ... --body ...
 gh pr view --json author -q .author.login                 # must print app/hal9000-agent-bot

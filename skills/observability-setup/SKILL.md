@@ -302,7 +302,7 @@ spec:
       path: /metrics
 ```
 
-Logs go to stdout as JSON. The platform's log shipper picks them up; the application never writes log files.
+Logs go to stdout as JSON. The platform's log shipper, where one exists, picks them up; the application never writes log files. On AKS with only the managed Prometheus add-on there is no shipper and `kubectl logs` is the log store (see the Azure reference).
 
 ## Alert Configuration
 

@@ -1,9 +1,10 @@
 # Manifest templates (kustomize base + dev overlay)
 
 Replace `{app}`, `{namespace}`, `{port}`, `{login_server}`, `{tag}`, `{ingress_ip}`, `{liveness_path}`,
-`{readiness_path}`. Everything else is deliberate; the comments say why. Layout and conventions match
-`gitops/apps/demo/podinfo` in cloud-infra; this version adds the restricted-compatible security
-context, scrape annotations and the overlay image pin.
+`{readiness_path}`. Everything else is deliberate; the comments say why. Directory layout, names and labels follow
+`gitops/apps/demo/podinfo` in cloud-infra. Added on top of what podinfo has: the restricted-compatible
+security context, the overlay `images:` pin, and optional scrape annotations. Diffs against podinfo
+will show those three differences; that is intended.
 
 ## base/kustomization.yaml
 
@@ -33,8 +34,10 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: {app}
+      # ONLY if the app serves Prometheus metrics on /metrics (observability-setup, Step 7). Delete the
+      # three annotations otherwise: a missing endpoint becomes a permanently failing scrape target and
+      # nothing reports it. Scraped by Azure Monitor managed Prometheus (ADR 0008) once the add-on is on.
       annotations:
-        # Scraped by annotation (Azure Monitor managed Prometheus, ADR 0008). No-op until the add-on is on.
         prometheus.io/scrape: "true"
         prometheus.io/port: "{port}"
         prometheus.io/path: /metrics

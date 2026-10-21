@@ -69,8 +69,9 @@ spec:
 
 ```sh
 # the collector's own Prometheus UI shows targets and last scrape errors
-kubectl -n kube-system port-forward $(kubectl -n kube-system get pod -l rsName=ama-metrics -o name | head -1) 9090
-open http://localhost:9090/targets
+kubectl -n kube-system port-forward "$(kubectl -n kube-system get pod -l rsName=ama-metrics -o name | head -1)" 9090 &
+sleep 2 && curl -s localhost:9090/api/v1/targets | jq '.data.activeTargets[] | select(.labels.namespace=="<ns>") | {pod: .labels.pod, health, lastError}'
+# or browse http://localhost:9090/targets; stop with: kill %1
 # a sample is in the workspace: portal > Monitor > Metrics explorer with PromQL, query up{job=~".*my-app.*"}
 ```
 
@@ -83,6 +84,8 @@ OpenTofu next to the workspace (cloud-infra: `modules/azure/managed-prometheus/r
 cluster with `cluster_name`. An alert rule needs an action group; the free portal Grafana has no alerting.
 
 ```hcl
+# Lives next to the workspace resource (cloud-infra: modules/azure/managed-prometheus/rules.tf);
+# `azurerm_monitor_workspace.this` is that module's workspace and `var.action_group_id` an input you add.
 resource "azurerm_monitor_alert_prometheus_rule_group" "my_app" {
   name                = "my-app"
   location            = var.location

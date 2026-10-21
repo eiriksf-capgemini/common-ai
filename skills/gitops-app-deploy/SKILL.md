@@ -35,7 +35,7 @@ A platform profile is a file under `references/platform-*.md` describing one Git
 |---|---|---|
 | `cloud-infra-azure` | cloud-infra repo, AKS + Argo CD ApplicationSet + ACR | [platform-cloud-infra-azure.md](./references/platform-cloud-infra-azure.md) |
 
-Pick the profile from the platform repo the user names. If no profile matches, say so and stop: writing manifests for an unknown platform produces files Argo CD will never pick up.
+Pick the profile whose **Recognise it by** line matches the platform repo (files and conventions, not the repo name, so forks and renames still match). If no profile matches, say so and stop: writing manifests for an unknown platform produces files Argo CD will never pick up.
 
 Collect before writing anything:
 
@@ -52,7 +52,7 @@ Collect before writing anything:
 
 ## Step 1: Discover platform values
 
-Read them, never recall them. The profile lists a command or file for each:
+Read them, never recall them. The profile lists a command or file for each. **Check the cluster's power state first** (the cloud-infra cluster auto-stops in the evening and `kubectl` hangs against a stopped cluster): if it is stopped, either start it and wait, or take the values that need the cluster (ingress IP) from the profile's Git fallback and record that as the source.
 
 - registry login server
 - ingress public IP (for dev hostnames) and ingress class
@@ -77,7 +77,7 @@ Build and push with the profile's registry commands. Tag with the chosen policy 
 
 ## Step 3: Manifests in the platform repo
 
-Follow the profile's layout exactly; the templates are in [manifest-templates.md](./references/manifest-templates.md). For the cloud-infra profile that is:
+Follow the profile's directory layout exactly; the templates are in [manifest-templates.md](./references/manifest-templates.md). For the cloud-infra profile that is:
 
 ```
 gitops/apps/<namespace>/<app>/
@@ -96,7 +96,7 @@ Rules the templates already follow; keep them when you adapt:
 - **Resource requests on every container.** Start small (`10m` / `64Mi`); the dev node is shared and the quota is per namespace. The namespace `LimitRange` adds defaults, but explicit is reviewable.
 - **Pod Security `restricted`-compatible** `securityContext`: `runAsNonRoot`, `seccompProfile: RuntimeDefault`, `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`. The namespaces enforce `baseline` and warn on `restricted`; a warning on every sync is noise nobody reads.
 - **Named port `http`**, Service on 80 targeting it, probes by port name.
-- **Prometheus annotations** on the pod template (`prometheus.io/scrape`, `port`, `path`). Harmless when the scraper is off, picked up when it is on.
+- **Prometheus annotations** on the pod template (`prometheus.io/scrape`, `port`, `path`) **only if the app serves `/metrics`**. Otherwise leave them out and drop the metrics line from the README section; add both when Step 7 has been done. An annotated pod without the endpoint is a silently failing scrape target.
 - **Dev ingress only in `overlays/dev`**, hostname `<app>.<ingress-ip>.nip.io`, no TLS until the platform has a DNS zone and ClusterIssuers.
 - **No secrets in Git.** Reference a `Secret` by name with `optional: true` where the app can start without it; creating the Secret is a manual `kubectl` step documented in the README.
 
@@ -107,7 +107,7 @@ kubectl kustomize gitops/apps/<namespace>/<app>/overlays/dev          # must ren
 kubectl apply --dry-run=server -k gitops/apps/<namespace>/<app>/overlays/dev   # needs the cluster up; catches PSA and quota rejections
 ```
 
-If the cluster is stopped (the profile says when), run the first command now and the second after it is started. Say which one you ran.
+If the cluster is stopped (the profile says when and how to start it), run the first command now and the second after it is started, or leave the server dry-run to the user. Say which one you ran.
 
 ## Step 5: README in the app repo
 
