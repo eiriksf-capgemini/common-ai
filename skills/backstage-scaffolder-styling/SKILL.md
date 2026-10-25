@@ -29,12 +29,11 @@ template card for free:
 
 ```ts
 // packages/app/src/modules/theme/theme.ts
-const brand = { ink900: '#061a2b', honoluluBlue: '#0070ad', gammaBlue: '#12abdb' };
-
+// Reuse the `ds` token object from the theme module (backstage-design-sync); never type hexes here.
 const brandPageTheme = {
   ...pageTheme,
-  home: genPageTheme({ colors: [brand.ink900, brand.honoluluBlue], shape: shapes.wave }),
-  service: genPageTheme({ colors: [brand.honoluluBlue, brand.gammaBlue], shape: shapes.round }),
+  home: genPageTheme({ colors: [ds.navBackground, ds.primary], shape: shapes.wave }),
+  service: genPageTheme({ colors: [ds.primary, ds.secondary], shape: shapes.round }),
 };
 ```
 

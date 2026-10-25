@@ -9,6 +9,16 @@ Authoritative documents inside it, read them before this file when they disagree
 `README.md`, `gitops/apps/README.md`, `docs/adr/0005` (layout), `0006` (registry), `0007` (namespaces),
 `0008` (metrics), `0009` (access control), `docs/runbooks/`.
 
+## Template values
+
+| Placeholder | Value |
+|---|---|
+| `{app_dir}` | `gitops/apps/<namespace>/<app>` |
+| `{dev_host}` | `<app>.<ingress-ip>.nip.io` (plain HTTP; see Cluster guardrails) |
+| `{ingress_class}` | `nginx` |
+| Reference app | `gitops/apps/demo/podinfo` (namespace `demo`); diff new manifests against it |
+| Platform-owned directories (ask first) | `gitops/platform/`, `gitops/clusters/`, `live/`, and any `namespace/` app |
+
 ## How a workload gets deployed
 
 - One Argo CD `ApplicationSet` per cluster scans `gitops/apps/*/*/overlays/<environment>` in the
@@ -81,10 +91,29 @@ so delete old tags occasionally (`az acr repository delete`).
   `prometheus.io/path`) in the workload namespaces listed in
   `gitops/platform/azure-monitor-metrics/configmap.yaml` (`podannotationnamespaceregex`).
 - Whether scraping is live changes over time (as of 2026-10-21 it was still a draft PR and the add-on was off).
-  Check, do not assume: `az aks show -g rg-cloudinfra-poc -n aks-cloudinfra-poc --query azureMonitorProfile.metrics.enabled`
-  and whether `gitops/platform/azure-monitor-metrics/` exists on `main`. Annotations are no-ops while it is off.
+  Check, do not assume: `az aks show -g <rg> -n <cluster> --query azureMonitorProfile.metrics.enabled` (names from
+  `make output STACK=live/azure/poc/20-cluster`) and whether `gitops/platform/azure-monitor-metrics/` exists on `main`.
+  Annotations are no-ops while it is off.
+- Recording and alerting rules live in OpenTofu next to the workspace: `modules/azure/managed-prometheus/rules.tf`.
+- Workspace query endpoint for an external Grafana: `make output STACK=live/azure/poc/40-observability`.
 - Logs: no Container insights, no log shipper. `kubectl logs` only.
 - Details for instrumenting the app: `observability-setup` skill, `references/azure-monitor-managed-prometheus.md`.
+
+## README values
+
+For the placeholders in `readme-deploy-section.md`:
+
+| Placeholder | Value |
+|---|---|
+| `{build_and_push}` | `az login && az acr login --name <registry>` / `docker build -t <login_server>/<app>:<tag> . && docker push <login_server>/<app>:<tag>` / or without local docker: `az acr build --registry <registry> --image <app>:<tag> .` |
+| `{platform_repo}`, `{platform_repo_url}` | `cloud-infra`, `https://github.com/eiriksf-capgemini/cloud-infra` (or the fork in use) |
+| `{cluster}`, `{reconciler}`, `{sync_time}` | `azure-dev` AKS, Argo CD, within ~3 minutes |
+| `{dev_url_access}` | plain HTTP; reachable from Norwegian networks and the operators' egress only |
+| `{status_command}` | `kubectl -n platform get application <namespace>-<app>` |
+| `{cluster_power_note}` | The cluster is stopped outside working hours (`make aks-start` in cloud-infra). |
+| `{metrics_scraper}` | Azure Monitor managed Prometheus via pod annotations |
+| `{dashboards}` | Azure portal → Monitor → Dashboards with Grafana (Entra ID login) |
+| `{logs}` | `kubectl -n <namespace> logs deploy/<app>`; no central log store yet |
 
 ## Confirm after merge
 
@@ -101,3 +130,8 @@ kubectl -n <namespace> describe pod -l app.kubernetes.io/name=<app> | grep -iE '
 - Nothing per application beyond its share of the node, as long as it fits. A second node is the
   expensive step (and uses the Free Trial's remaining vCPU quota); fit first.
 - Metrics: billed per ingested sample once the add-on is on; keep label cardinality bounded.
+
+## Sources
+
+- [Azure Container Registry authentication with Entra ID](https://learn.microsoft.com/azure/container-registry/container-registry-authentication)
+- [`az acr build`](https://learn.microsoft.com/azure/container-registry/container-registry-tutorial-quick-task)

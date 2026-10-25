@@ -1,10 +1,11 @@
 # Manifest templates (kustomize base + dev overlay)
 
-Replace `{app}`, `{namespace}`, `{port}`, `{login_server}`, `{tag}`, `{ingress_ip}`, `{liveness_path}`,
-`{readiness_path}`. Everything else is deliberate; the comments say why. Directory layout, names and labels follow
-`gitops/apps/demo/podinfo` in cloud-infra. Added on top of what podinfo has: the restricted-compatible
-security context, the overlay `images:` pin, and optional scrape annotations. Diffs against podinfo
-will show those three differences; that is intended.
+Replace `{app}`, `{namespace}`, `{port}`, `{login_server}`, `{tag}`, `{liveness_path}`, `{readiness_path}`, and
+the profile-supplied `{app_dir}` (the application's directory in the platform repo), `{dev_host}` (dev hostname
+pattern) and `{ingress_class}`. Everything else is deliberate; the comments say why. Directory layout, names and
+labels follow the profile's **reference app**; diff against it after writing. Added on top of a plain reference app:
+the restricted-compatible security context, the overlay `images:` pin, and optional scrape annotations. A diff
+that shows only those three differences is the intended result.
 
 ## base/kustomization.yaml
 
@@ -34,16 +35,16 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: {app}
-      # ONLY if the app serves Prometheus metrics on /metrics (observability-setup, Step 7). Delete the
-      # three annotations otherwise: a missing endpoint becomes a permanently failing scrape target and
-      # nothing reports it. Scraped by Azure Monitor managed Prometheus (ADR 0008) once the add-on is on.
+      # ONLY if the app serves Prometheus metrics on /metrics (observability-setup, Step 7) AND the profile
+      # says pods are scraped by annotation. Delete the three annotations otherwise: a missing endpoint becomes
+      # a permanently failing scrape target and nothing reports it.
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "{port}"
         prometheus.io/path: /metrics
     spec:
-      # Pod Security "restricted"-compatible. The namespaces enforce baseline and warn on restricted;
-      # these four settings silence the warning and cost nothing.
+      # Pod Security "restricted"-compatible. Namespaces that enforce baseline and warn on restricted
+      # (the profile says) stay quiet with these four settings, and they cost nothing.
       securityContext:
         runAsNonRoot: true
         seccompProfile:
@@ -138,16 +139,16 @@ images:
 ## overlays/dev/ingress.yaml
 
 ```yaml
-# Dev-only: nip.io hostname on the ingress-nginx public IP, plain HTTP. Reachable only from the
-# allowlisted source ranges (ADR 0009). Replace with a real host + cert-manager TLS when a DNS zone exists.
+# Dev-only. Hostname pattern, ingress class, TLS and who can reach it are defined by the platform profile;
+# add TLS the way the profile describes once the platform supports it.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {app}
 spec:
-  ingressClassName: nginx
+  ingressClassName: {ingress_class}
   rules:
-    - host: {app}.{ingress_ip}.nip.io
+    - host: {dev_host}
       http:
         paths:
           - path: /
@@ -161,7 +162,7 @@ spec:
 
 ## Overlay patches
 
-Environment-specific env vars go in a strategic-merge patch, as `demo/podinfo` does:
+Environment-specific env vars go in a strategic-merge patch, as the profile's reference app does:
 
 ```yaml
 # overlays/dev/patch-env.yaml   (add `patches: [{path: patch-env.yaml}]` to the overlay kustomization)
@@ -176,12 +177,12 @@ spec:
         - name: {app}
           env:
             - name: PUBLIC_URL
-              value: http://{app}.{ingress_ip}.nip.io
+              value: http://{dev_host}
 ```
 
 ## Render check
 
 ```sh
-kubectl kustomize gitops/apps/{namespace}/{app}/overlays/dev
-kubectl apply --dry-run=server -k gitops/apps/{namespace}/{app}/overlays/dev    # cluster must be running
+kubectl kustomize {app_dir}/overlays/dev
+kubectl apply --dry-run=server -k {app_dir}/overlays/dev    # cluster must be running
 ```

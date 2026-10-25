@@ -2,8 +2,8 @@
 
 What changes when the cluster's Prometheus is the Azure-managed one instead of a self-hosted
 kube-prometheus-stack. The application code in SKILL.md is identical; the Kubernetes and dashboard side
-is not. Written against the cloud-infra platform (ADR 0008), verified 2026-10-21; re-check the commands,
-the add-on moves fast.
+is not. Verified against one AKS platform on 2026-10-21; re-check the commands, the add-on moves fast.
+Where a value lives in a specific platform repo, the `gitops-app-deploy` platform profile names the file or command.
 
 ## What is there
 
@@ -29,13 +29,12 @@ kubectl -n kube-system get pods -l rsName=ama-metrics                           
 
 ## Getting an application scraped
 
-### Annotations (what cloud-infra uses)
+### Annotations
 
 The add-on scrapes pods annotated `prometheus.io/scrape: "true"` **only in namespaces matched by**
 `podannotationnamespaceregex` in the `ama-metrics-settings-configmap` (`kube-system`). The default is
-no namespaces at all; cloud-infra sets it to the workload namespaces in
-`gitops/platform/azure-monitor-metrics/configmap.yaml`. A new namespace must be added there or nothing
-is scraped, and there is no error anywhere.
+no namespaces at all; the platform repo sets it to the workload namespaces (the platform profile says
+where). A new namespace must be added there or nothing is scraped, and there is no error anywhere.
 
 ```yaml
       annotations:
@@ -80,11 +79,11 @@ Expect a few minutes of lag between the first scrape and the first query result.
 ## Rules and alerts
 
 Recording and alerting rules are Azure resources, not cluster objects. Keep them in the platform repo's
-OpenTofu next to the workspace (cloud-infra: `modules/azure/managed-prometheus/rules.tf`), scoped to the
+OpenTofu next to the workspace (the platform profile names the file), scoped to the
 cluster with `cluster_name`. An alert rule needs an action group; the free portal Grafana has no alerting.
 
 ```hcl
-# Lives next to the workspace resource (cloud-infra: modules/azure/managed-prometheus/rules.tf);
+# Lives next to the workspace resource in the platform repo;
 # `azurerm_monitor_workspace.this` is that module's workspace and `var.action_group_id` an input you add.
 resource "azurerm_monitor_alert_prometheus_rule_group" "my_app" {
   name                = "my-app"
@@ -117,7 +116,7 @@ resource "azurerm_monitor_alert_prometheus_rule_group" "my_app" {
   Kubernetes ones work because the platform installed the default recording rules. No alerting, library
   panels or plugins. Entra ID login; share by portal RBAC on the workspace (`Monitoring Reader`).
 - **Any Grafana** (desktop, Grafana Cloud, Managed Grafana): data source type *Prometheus*, URL = the
-  workspace `query_endpoint` (cloud-infra: `make output STACK=live/azure/poc/40-observability`),
+  workspace `query_endpoint` (the platform profile says how to read it),
   authentication *Azure Monitor managed service for Prometheus* with a managed identity or app
   registration holding `Monitoring Data Reader` on the workspace.
 - PromQL is standard; the `cluster` label is added by the add-on, use it when more than one cluster
