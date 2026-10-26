@@ -29,12 +29,14 @@ template card for free:
 
 ```ts
 // packages/app/src/modules/theme/theme.ts
-const brand = { ink900: '#061a2b', honoluluBlue: '#0070ad', gammaBlue: '#12abdb' };
+// `ds` holds the design-system tokens. If backstage-design-sync already defined it in this file, reuse
+// that one; otherwise define it from your DS tokens. The '<...>' strings are placeholders, never defaults.
+const ds = { primary: '<primary hex>', secondary: '<secondary hex>', navBackground: '<nav background hex>' };
 
 const brandPageTheme = {
   ...pageTheme,
-  home: genPageTheme({ colors: [brand.ink900, brand.honoluluBlue], shape: shapes.wave }),
-  service: genPageTheme({ colors: [brand.honoluluBlue, brand.gammaBlue], shape: shapes.round }),
+  home: genPageTheme({ colors: [ds.navBackground, ds.primary], shape: shapes.wave }),
+  service: genPageTheme({ colors: [ds.primary, ds.secondary], shape: shapes.round }),
 };
 ```
 

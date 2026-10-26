@@ -52,10 +52,10 @@ Collect before writing anything:
 
 ## Step 1: Discover platform values
 
-Read them, never recall them. The profile lists a command or file for each. **Check the cluster's power state first** (the cloud-infra cluster auto-stops in the evening and `kubectl` hangs against a stopped cluster): if it is stopped, either start it and wait, or take the values that need the cluster (ingress IP) from the profile's Git fallback and record that as the source.
+Read them, never recall them. The profile lists a command or file for each. **Check the cluster's power state first** if the profile says the cluster can be stopped (`kubectl` hangs against a stopped cluster): if it is stopped, either start it and wait, or take the values that need the cluster (ingress IP) from the profile's Git fallback and record that as the source.
 
-- registry login server
-- ingress public IP (for dev hostnames) and ingress class
+- registry name and login server
+- whatever the profile's dev hostname pattern needs (for `cloud-infra-azure`: the ingress public IP), and the ingress class
 - the environment the target cluster serves
 - the namespace's `LimitRange`, `ResourceQuota` and Pod Security labels
 - current headroom on the node and in the namespace quota
@@ -77,7 +77,7 @@ Build and push with the profile's registry commands. Tag with the chosen policy 
 
 ## Step 3: Manifests in the platform repo
 
-Follow the profile's directory layout exactly; the templates are in [manifest-templates.md](./references/manifest-templates.md). For the cloud-infra profile that is:
+Follow the profile's directory layout exactly; the templates are in [manifest-templates.md](./references/manifest-templates.md). The profile names the application directory (`{app_dir}` in the templates). For the `cloud-infra-azure` profile that is:
 
 ```
 gitops/apps/<namespace>/<app>/
@@ -94,10 +94,10 @@ Rules the templates already follow; keep them when you adapt:
 
 - **Image pinned in the overlay** (`images:` transformer), base carries the repository only. Promotion is changing the tag in the next overlay.
 - **Resource requests on every container.** Start small (`10m` / `64Mi`); the dev node is shared and the quota is per namespace. The namespace `LimitRange` adds defaults, but explicit is reviewable.
-- **Pod Security `restricted`-compatible** `securityContext`: `runAsNonRoot`, `seccompProfile: RuntimeDefault`, `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`. The namespaces enforce `baseline` and warn on `restricted`; a warning on every sync is noise nobody reads.
+- **Pod Security `restricted`-compatible** `securityContext`: `runAsNonRoot`, `seccompProfile: RuntimeDefault`, `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`. The profile says which level the namespaces enforce and which they warn on; a warning on every sync is noise nobody reads.
 - **Named port `http`**, Service on 80 targeting it, probes by port name.
-- **Prometheus annotations** on the pod template (`prometheus.io/scrape`, `port`, `path`) **only if the app serves `/metrics`**. Otherwise leave them out and drop the metrics line from the README section; add both when Step 7 has been done. An annotated pod without the endpoint is a silently failing scrape target.
-- **Dev ingress only in `overlays/dev`**, hostname `<app>.<ingress-ip>.nip.io`, no TLS until the platform has a DNS zone and ClusterIssuers.
+- **Prometheus annotations** on the pod template (`prometheus.io/scrape`, `port`, `path`) **only if the app serves `/metrics`** and the profile says annotations are what gets scraped. Otherwise leave them out and drop the metrics line from the README section; add both when Step 7 has been done. An annotated pod without the endpoint is a silently failing scrape target.
+- **Dev ingress only in `overlays/dev`**; hostname pattern, ingress class and TLS policy come from the profile (`{dev_host}`, `{ingress_class}` in the templates).
 - **No secrets in Git.** Reference a `Secret` by name with `optional: true` where the app can start without it; creating the Secret is a manual `kubectl` step documented in the README.
 
 ## Step 4: Verify
@@ -115,7 +115,7 @@ Add or update the **Deploy** and **Observability** sections of the service READM
 
 ## Step 6: Ship and confirm
 
-1. Open a PR in the platform repo. On the cloud-infra profile a merged PR **is** a deployment; say so in the PR description.
+1. Open a PR in the platform repo. Where the profile says a merged PR **is** a deployment, say so in the PR description.
 2. After merge, confirm with the profile's commands: the Argo CD `Application` exists and is `Synced`/`Healthy`, the pod is `Running`, the dev URL answers. Report the actual output, not the expectation.
 3. If the first sync fails with "namespace not found", the namespace app has not synced yet; Argo CD retries. If it fails on quota or PSA, fix the manifest, do not raise the quota.
 
@@ -137,7 +137,7 @@ Application-side instrumentation (a `/metrics` endpoint, business metrics, healt
 
 - Creating a new namespace (needs a `namespace` app with quota and PSA labels: a platform decision)
 - Raising a `ResourceQuota` or `LimitRange`
-- Creating `test` or `prod` overlays, or anything under `gitops/platform/`, `gitops/clusters/` or `live/`
+- Creating `test` or `prod` overlays, or touching anything in the platform repo outside the application directory (platform components, cluster definitions, infrastructure code; the profile lists the directories)
 - Replacing an existing Dockerfile rather than amending it
 
 ### 🚫 Never
@@ -167,5 +167,4 @@ Left for the user: <manual secrets, PR to open, start cluster, ...>
 - [Argo CD ApplicationSet Git directory generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/)
 - [Kustomize images transformer](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/images/)
 - [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
-- [Azure Container Registry authentication with Entra ID](https://learn.microsoft.com/azure/container-registry/container-registry-authentication)
-- [`az acr build`](https://learn.microsoft.com/azure/container-registry/container-registry-tutorial-quick-task)
+- Registry and cloud-specific sources: in each platform profile

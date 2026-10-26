@@ -21,17 +21,17 @@ Pick what you need and copy it into your project:
 | **GitHub Copilot** | `.github/agents/`, `.github/instructions/`, `.github/prompts/`, `.github/skills/` |
 | **Claude Code**    | `.claude/agents/`, `.claude/skills/`, and `CLAUDE.md` for instructions       |
 
-Each customization has its own documentation in the table below.
+Each customization documents itself in its own folder (a README or SKILL.md); the table below links to them.
 
 ## Customizations
 
 | Type                | Description                                                                             | Documentation                                 |
 | ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------- |
-| 🤖 **Agents**       | Specialised assistants, invoked with `@agent-name` in chat                              | **[Agents →](docs/README.agents.md)**         |
-| 📋 **Instructions** | Coding standards activated by file pattern (`*.kt`, `*.tsx`, `*.sql`)                  | **[Instructions →](docs/README.instructions.md)** |
-| ⚡ **Prompts**      | Scaffolding templates available via `/prompt-name` in chat                              | **[Prompts →](docs/README.prompts.md)**       |
-| 🎯 **Skills**       | Production patterns with bundled templates and references                               | **[Skills →](docs/README.skills.md)**         |
-| 🪝 **Hooks**        | Pre- and post-tool-use guardrails                                                       | **[Hooks →](docs/README.hooks.md)**           |
+| 🤖 **Agents**       | Specialised assistants, invoked with `@agent-name` in chat                              | **[Agents →](agents/)**                       |
+| 📋 **Instructions** | Coding standards activated by file pattern (`*.kt`, `*.tsx`, `*.sql`)                  | **[Instructions →](instructions/)**           |
+| ⚡ **Prompts**      | Scaffolding templates available via `/prompt-name` in chat                              | **[Prompts →](prompts/)**                     |
+| 🎯 **Skills**       | Production patterns with bundled templates and references                               | **[Skills →](skills/)**                       |
+| 🪝 **Hooks**        | Pre- and post-tool-use guardrails                                                       | **[Hooks →](hooks/)**                         |
 
 ## 📖 Folder structure
 
@@ -41,7 +41,7 @@ Each customization has its own documentation in the table below.
 ├── prompts/              # Task-specific scaffolding templates (.prompt.md + .metadata.json)
 ├── skills/               # One folder per skill, each with a SKILL.md and metadata.json
 ├── hooks/                # Tool-use guardrails (.hook.json + script)
-├── docs/                 # Detailed documentation for each customization type
+├── docs/                 # Plans and design notes for the repo itself
 └── .github/              # Workflows and repo-level Copilot configuration
 ```
 
