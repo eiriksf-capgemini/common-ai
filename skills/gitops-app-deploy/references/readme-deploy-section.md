@@ -8,7 +8,8 @@ documentation out of here; link to it.
 | Placeholder | Source |
 |---|---|
 | `{app}`, `{namespace}`, `{tag}`, `{liveness_path}`, `{readiness_path}` | Step 0 inputs |
-| `{login_server}`, `{dev_host}` | Step 1 discovery |
+| `{registry}`, `{login_server}` | Step 1 discovery |
+| `{dev_host}` | the profile's hostname pattern, filled with what Step 1 discovered (for example the ingress IP) |
 | `{tag_policy}` | Step 0 (`semver` or `the short git SHA`) |
 | `{build_and_push}` | profile: registry commands (build, push, build-in-cloud if offered) |
 | `{platform_repo}`, `{platform_repo_url}`, `{app_dir}` | profile: repo name, URL and application directory |

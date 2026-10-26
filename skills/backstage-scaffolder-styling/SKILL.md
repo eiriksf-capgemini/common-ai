@@ -29,7 +29,10 @@ template card for free:
 
 ```ts
 // packages/app/src/modules/theme/theme.ts
-// Reuse the `ds` token object from the theme module (backstage-design-sync); never type hexes here.
+// `ds` holds the design-system tokens. If backstage-design-sync already defined it in this file, reuse
+// that one; otherwise define it from your DS tokens. The '<...>' strings are placeholders, never defaults.
+const ds = { primary: '<primary hex>', secondary: '<secondary hex>', navBackground: '<nav background hex>' };
+
 const brandPageTheme = {
   ...pageTheme,
   home: genPageTheme({ colors: [ds.navBackground, ds.primary], shape: shapes.wave }),

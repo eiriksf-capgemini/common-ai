@@ -54,8 +54,8 @@ Collect before writing anything:
 
 Read them, never recall them. The profile lists a command or file for each. **Check the cluster's power state first** if the profile says the cluster can be stopped (`kubectl` hangs against a stopped cluster): if it is stopped, either start it and wait, or take the values that need the cluster (ingress IP) from the profile's Git fallback and record that as the source.
 
-- registry login server
-- ingress public IP (for dev hostnames) and ingress class
+- registry name and login server
+- whatever the profile's dev hostname pattern needs (for `cloud-infra-azure`: the ingress public IP), and the ingress class
 - the environment the target cluster serves
 - the namespace's `LimitRange`, `ResourceQuota` and Pod Security labels
 - current headroom on the node and in the namespace quota
