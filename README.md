@@ -45,6 +45,25 @@ Each customization has its own documentation in the table below.
 └── .github/              # Workflows and repo-level Copilot configuration
 ```
 
+## 🔌 MCP servers for the POC platform
+
+`.mcp.json` at the repo root connects Claude Code (project scope) to the two MCP servers of
+the cloud-infra POC when you work inside this checkout:
+
+- **`openchoreo`**: OpenChoreo's own server (`openchoreo-api`, `/mcp`): projects,
+  components, deployments, builds. OAuth login against Thunder on first use.
+- **`platform`**: the console's server (cloud-infra ADR 0017): platform facts, catalog
+  search, Azure resources and cost, every skill in this repo as a prompt
+  (`/mcp__platform__<skill>`), the cloud-infra docs as resources. Needs a bearer token:
+
+```sh
+export PLATFORM_MCP_TOKEN=$(kubectl -n openchoreo-control-plane get secret ai-elements-mcp -o jsonpath='{.data.token}' | base64 -d)
+export NODE_EXTRA_CA_CERTS=~/.config/poc-root-ca.crt   # the POC's private CA
+```
+
+Outside this checkout, `claude mcp add --transport http ...` with the same URLs (see the
+cloud-infra runbook `docs/runbooks/openchoreo-console-image.md`).
+
 ## 🤝 Contributing
 
 1. **Agents**: Add a folder to `agents/` with `<name>.md` for Claude Code. A `<name>.agent.md` for Copilot is welcome but optional
