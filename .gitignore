@@ -37,8 +37,7 @@ Thumbs.db
 
 # Developer-local editor/agent config (not portable across contributors)
 .claude/settings.local.json
-# .mcp.json is committed on purpose: it holds only URLs and a ${PLATFORM_MCP_TOKEN} placeholder
-# (Claude Code expands it from the environment), never a token.
+# .mcp.json is committed on purpose: it holds only server URLs, never a token.
 
 # GitHub App identity for agents
 .gh-app-identity.json

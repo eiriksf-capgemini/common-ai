@@ -54,10 +54,10 @@ the cloud-infra POC when you work inside this checkout:
   components, deployments, builds. OAuth login against Thunder on first use.
 - **`platform`**: the console's server (cloud-infra ADR 0017): platform facts, catalog
   search, Azure resources and cost, every skill in this repo as a prompt
-  (`/mcp__platform__<skill>`), the cloud-infra docs as resources. Needs a bearer token:
+  (`/mcp__platform__<skill>`), the cloud-infra docs as resources. Same Thunder login as
+  `openchoreo` (`/mcp` → platform → Authenticate). Only the private CA is needed:
 
 ```sh
-export PLATFORM_MCP_TOKEN=$(kubectl -n openchoreo-control-plane get secret ai-elements-mcp -o jsonpath='{.data.token}' | base64 -d)
 export NODE_EXTRA_CA_CERTS=~/.config/poc-root-ca.crt   # the POC's private CA
 ```
 
