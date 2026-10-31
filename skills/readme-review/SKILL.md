@@ -5,6 +5,7 @@ license: MIT
 metadata:
   domain: general
   tags: readme documentation review scaffold
+roles: [all]
 ---
 
 # README Review & Scaffold

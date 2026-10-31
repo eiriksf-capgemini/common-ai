@@ -6,6 +6,7 @@ compatibility: Application with a Dockerfile (or one this skill adds), deployed 
 metadata:
   domain: platform
   tags: kubernetes gitops argocd kustomize aks acr deploy
+roles: [all]
 ---
 
 # GitOps application deploy

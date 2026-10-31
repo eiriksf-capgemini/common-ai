@@ -1,0 +1,19 @@
+{
+  "description": "Deterministic pre-publish scan that blocks AI-slop tells in files, messages, titles and labels; runs in CI or as a Claude Code hook",
+  "domain": "writing",
+  "tags": [
+    "writing",
+    "anti-slop",
+    "lint",
+    "hook",
+    "ci"
+  ],
+  "references": [
+    "scripts/scan.py"
+  ],
+  "examples": [
+    "Scan this draft for AI tells before I post it",
+    "Wire slop-gate as a hook so every write is checked",
+    "Sjekk denne teksten for KI-tegn"
+  ]
+}

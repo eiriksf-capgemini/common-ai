@@ -1,0 +1,23 @@
+{
+  "description": "Anti-slop frontend skill for landing pages, portfolios and redesigns: infer a design direction, use the real design system, audit before redesigning",
+  "domain": "frontend",
+  "tags": [
+    "frontend",
+    "design",
+    "landing-page",
+    "ui",
+    "anti-slop"
+  ],
+  "references": [
+    "references/canonical-sources.md",
+    "references/design-systems-install.md",
+    "references/liquid-glass.md",
+    "references/motion-skeletons.md",
+    "references/pattern-vocabulary.md"
+  ],
+  "examples": [
+    "Build a landing page for this product that does not look templated",
+    "Redesign our marketing site, audit first",
+    "Lag en landingsside som ikke ser generisk ut"
+  ]
+}

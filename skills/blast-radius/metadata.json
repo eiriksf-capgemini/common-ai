@@ -1,0 +1,16 @@
+{
+  "description": "Trace what depends on an interface before changing it: callers, consumers, schemas, configs and shared types, classified with evidence",
+  "domain": "engineering",
+  "tags": [
+    "refactoring",
+    "dependencies",
+    "api",
+    "impact-analysis"
+  ],
+  "references": [],
+  "examples": [
+    "What breaks if I rename this function?",
+    "Blast radius of changing the response shape of /orders",
+    "Hva avhenger av denne kolonnen?"
+  ]
+}
