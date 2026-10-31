@@ -5,6 +5,8 @@ license: MIT
 metadata:
   domain: delivery
   tags: github github-app identity agents security
+roles: [all]
+integrations: [github]
 ---
 
 # GitHub App identity for coding agents
@@ -46,7 +48,7 @@ The last line proves the match count before believing the zero: it must print `n
 
 ### 3. Drop the helper into the repo
 
-Copy `gh-app-token.mjs` from this skill directory to `scripts/gh-app-token.mjs` (or wherever the repo keeps tooling). This repo already carries a copy at `scripts/gh-app-token.mjs` for its own pull requests. Node 18+, no dependencies. Three modes:
+Copy `gh-app-token.mjs` from this skill directory to `scripts/gh-app-token.mjs` (or wherever the repo keeps tooling). Node 18+, no dependencies. Three modes:
 
 | Command | Prints | Use |
 |---|---|---|

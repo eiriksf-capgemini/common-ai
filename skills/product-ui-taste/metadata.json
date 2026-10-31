@@ -1,0 +1,22 @@
+{
+  "description": "Anti-slop skill for product UI: dashboards, tables, forms, flows and app shells that stay correct at every edge case and map to the house design system",
+  "domain": "frontend",
+  "tags": [
+    "frontend",
+    "product-ui",
+    "dashboard",
+    "forms",
+    "accessibility",
+    "design-system"
+  ],
+  "references": [
+    "references/block-skeletons.md",
+    "references/canonical-sources.md",
+    "references/install-commands.md"
+  ],
+  "examples": [
+    "Build the settings page using our design system",
+    "Review this dashboard for overflow, empty and error states",
+    "Lag et datatabell-view som tåler lange etiketter"
+  ]
+}

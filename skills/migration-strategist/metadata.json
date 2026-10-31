@@ -1,0 +1,17 @@
+{
+  "description": "Plan a backward-compatible schema, API, event or data-format change for systems where old and new code run together: expand-migrate-contract with gates, backfill, dual-write and rollback",
+  "domain": "engineering",
+  "tags": [
+    "migration",
+    "database",
+    "api",
+    "expand-contract",
+    "zero-downtime"
+  ],
+  "references": [],
+  "examples": [
+    "Plan a migration that renames the customer_id column without downtime",
+    "How do we change this event payload while old consumers are still running?",
+    "Hvordan migrere uten nedetid?"
+  ]
+}

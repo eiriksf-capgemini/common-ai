@@ -1,0 +1,18 @@
+{
+  "description": "Pick the right chart or diagram form for a dataset so the finding lands in three seconds; catalog of 20+ forms with when-to-use, failure modes and encoding rules",
+  "domain": "writing",
+  "tags": [
+    "data-visualization",
+    "charts",
+    "reporting",
+    "presentation"
+  ],
+  "references": [
+    "references/forms.md"
+  ],
+  "examples": [
+    "Which chart should I use for these survey results?",
+    "This bar chart buries the point, what form fits?",
+    "Hvilken diagramform passer for disse tallene?"
+  ]
+}

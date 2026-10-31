@@ -5,6 +5,8 @@ license: MIT
 metadata:
   domain: security
   tags: github-actions ci security audit
+roles: [all]
+integrations: [github]
 ---
 
 # GitHub Actions Hardening Audit

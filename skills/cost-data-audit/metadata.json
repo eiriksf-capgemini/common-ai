@@ -1,0 +1,19 @@
+{
+  "description": "Audit a repository for the data needed to measure and compare the cost of AI-assisted development, with a dependency-free detector and a gap list mapped to the tracker",
+  "domain": "delivery",
+  "tags": [
+    "cost",
+    "ai-usage",
+    "metrics",
+    "tokens",
+    "measurement"
+  ],
+  "references": [
+    "detect.py"
+  ],
+  "examples": [
+    "Audit our cost data before the release report",
+    "What should we track to compare AI cost with another project?",
+    "Sett opp token-sporing for dette repoet"
+  ]
+}
