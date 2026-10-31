@@ -2,11 +2,19 @@
   "mcpServers": {
     "openchoreo": {
       "type": "http",
-      "url": "https://api.openchoreo.20.91.237.179.nip.io/mcp"
+      "url": "https://api.openchoreo.20.91.237.179.nip.io/mcp",
+      "oauth": {
+        "clientId": "user_mcp_client",
+        "callbackPort": 8075
+      }
     },
     "platform": {
       "type": "http",
-      "url": "https://console.openchoreo.20.91.237.179.nip.io/api/openchoreo-ai-elements/mcp"
+      "url": "https://console.openchoreo.20.91.237.179.nip.io/api/openchoreo-ai-elements/mcp",
+      "oauth": {
+        "clientId": "user_mcp_client",
+        "callbackPort": 8075
+      }
     }
   }
 }
