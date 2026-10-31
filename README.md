@@ -55,7 +55,11 @@ the cloud-infra POC when you work inside this checkout:
 - **`platform`**: the console's server (cloud-infra ADR 0017): platform facts, catalog
   search, Azure resources and cost, every skill in this repo as a prompt
   (`/mcp__platform__<skill>`), the cloud-infra docs as resources. Same Thunder login as
-  `openchoreo` (`/mcp` → platform → Authenticate). Only the private CA is needed:
+  `openchoreo` (`/mcp` → platform → Authenticate).
+
+Both entries name Thunder's pre-registered public client `user_mcp_client` with callback
+port 8075 (Thunder does not allow anonymous dynamic client registration, so Claude Code
+cannot register itself). Only the private CA is needed:
 
 ```sh
 export NODE_EXTRA_CA_CERTS=~/.config/poc-root-ca.crt   # the POC's private CA
