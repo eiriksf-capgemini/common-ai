@@ -11,7 +11,8 @@ Usage:
         use a generic JSON array of work items (each with a "metadata" object)
         instead of auto-detecting a beads database
 
-Exit 0 on a completed scan, 2 if the target is not a git repository.
+Exit 0 on a completed scan, 2 on a usage error, a missing git, or a target that is
+not a git repository.
 """
 import json
 import os
@@ -34,6 +35,7 @@ COVARIATE_FIELDS = ["model", "model_effort", "cc_type", "cc_scope"]
 HUMAN_FIELDS = ["handback", "handbacks", "manual_merge", "human_minutes", "human_roundtrips"]
 CONTROL_MARKERS = ["retro_source", "control", "audit", "gate"]
 ID_RE = re.compile(r"(?:[A-Z][A-Z0-9]+-\d+|#\d+|[a-z][a-z0-9]*-\d+)")
+LONG_LIVED_BRANCHES = {"main", "master", "develop", "dev", "trunk", "staging", "production"}
 POLICY_TERMS = ["severity", "round", "lenient", "approx", "exact", "blocks", "cap"]
 TELEMETRY_KEYS = ["CLAUDE_CODE_ENABLE_TELEMETRY", "OTEL_EXPORTER", "OTEL_METRICS_EXPORTER", "OTEL_LOGS_EXPORTER"]
 
@@ -65,14 +67,22 @@ def load_items(root, items_path):
 
 
 def normalise(data):
+    """Accept a list of items, or an object wrapping one list (`{"issues": [...]}`)."""
+    if isinstance(data, dict):
+        lists = [v for v in data.values() if isinstance(v, list)]
+        data = lists[0] if len(lists) == 1 else []
     items = []
-    for b in data:
+    for b in data if isinstance(data, list) else []:
+        if not isinstance(b, dict):
+            continue
         m = b.get("metadata") or {}
         if isinstance(m, str):
             try:
                 m = json.loads(m)
             except json.JSONDecodeError:
                 m = {}
+        if not isinstance(m, dict):
+            m = {}
         b = dict(b)
         b["metadata"] = m
         items.append(b)
@@ -130,11 +140,17 @@ def main():
     items_path = None
     if "--items" in args:
         i = args.index("--items")
+        if i + 1 >= len(args) or args[i + 1].startswith("--"):
+            print("usage: detect.py [--json] [--items items.json] <repo-root>", file=sys.stderr)
+            sys.exit(2)
         items_path = args[i + 1]
         del args[i:i + 2]
     args = [a for a in args if a != "--json"]
     root = Path(args[0] if args else ".").resolve()
 
+    if not shutil.which("git"):
+        print("git not found on PATH", file=sys.stderr)
+        sys.exit(2)
     rc, _, _ = run(["git", "rev-parse", "--is-inside-work-tree"], cwd=root)
     if rc != 0:
         print(f"not a git repository: {root}", file=sys.stderr)
@@ -159,12 +175,15 @@ def main():
             except (json.JSONDecodeError, KeyError):
                 branches = []
     if not branches:
-        rc, out, _ = run(["git", "branch", "-r", "--format=%(refname:short)"], cwd=root)
-        branches = [b.split("/", 1)[-1] for b in out.split() if "HEAD" not in b]
-        bsrc = "git branch -r"
-    ids = {b.get("id") for b in items if b.get("id")}
+        # A bare remote name is how a modern git prints origin/HEAD with this format.
+        rc, out, _ = run(["git", "for-each-ref", "refs/remotes", "--format=%(refname:short)"], cwd=root)
+        branches = [b.split("/", 1)[1] for b in out.split() if "/" in b and not b.endswith("/HEAD")]
+        bsrc = "git for-each-ref refs/remotes"
+    branches = [b for b in branches if b not in LONG_LIVED_BRANCHES]
+    ids = {str(b.get("id")) for b in items if b.get("id")}
     if ids:
-        with_id = [b for b in branches if any(i in b for i in ids)]
+        id_rx = re.compile(r"(?<![A-Za-z0-9])(?:%s)(?![A-Za-z0-9])" % "|".join(re.escape(i) for i in sorted(ids, key=len, reverse=True)))
+        with_id = [b for b in branches if id_rx.search(b)]
         how = "contain a real item id"
     else:
         with_id = [b for b in branches if ID_RE.search(b)]
@@ -183,8 +202,9 @@ def main():
         except OSError:
             continue
         for k in TELEMETRY_KEYS:
-            tel_hits[k] += t.count(k)
-    env_hits = [k for k in TELEMETRY_KEYS if os.environ.get(k)]
+            # A key with a non-empty value, not a mention or an explicit "0".
+            tel_hits[k] += len(re.findall(r'"%s[A-Z_]*"\s*:\s*"(?!0?"|false")[^"]+"' % k, t))
+    env_hits = [k for k in TELEMETRY_KEYS if os.environ.get(k, "").strip().lower() not in ("", "0", "false")]
     usage_scripts = [str(p.relative_to(root)) for p in root.glob("scripts/*") if re.search(r"usage|cost|token", p.name, re.I)]
     tel_total = sum(tel_hits.values()) + len(env_hits)
     self_reported = fc.get("tokens_impl", 0)
@@ -256,7 +276,13 @@ def main():
         f"fields {hf or 0}; doc mentions {dict(hgrep)}; started_at/closed_at present on {sum(1 for b in items if b.get('started_at') and b.get('closed_at'))} items (wall-clock is derivable)")
 
     # R9 controls tagged
-    ctrl = sum(1 for b in items if any(m in (b["metadata"].get("cc_type") or "") or m in " ".join(b.get("labels") or []) for m in CONTROL_MARKERS) or "retro_source" in b["metadata"])
+    marker_rx = re.compile(r"\b(%s)\b" % "|".join(CONTROL_MARKERS), re.I)
+    ctrl = 0
+    for b in items:
+        labels = b.get("labels") or []
+        haystack = " ".join([str(b["metadata"].get("cc_type") or "")] + [str(l) for l in (labels if isinstance(labels, list) else [labels])])
+        if marker_rx.search(haystack) or "retro_source" in b["metadata"]:
+            ctrl += 1
     row("R9", "controls (audits, gates, retros) tracked as items with cost",
         status(False, partial=ctrl > 0, unknown=n_items == 0),
         f"{ctrl} items carry a control marker ({CONTROL_MARKERS}); none has a dedicated control flag")

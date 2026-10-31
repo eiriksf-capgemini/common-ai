@@ -44,12 +44,12 @@ python3 scripts/scan.py content/**/*.md       # many
 cat draft.md | python3 scripts/scan.py -      # stdin
 ```
 
-Exit code 0 is clear, 1 is tells found, so it drops into CI or a pre-commit hook
-unchanged. Every hit prints its label and the surrounding text.
+Exit code 0 is clear, 1 is tells found, 2 is a file that could not be read, so it
+drops into CI or a pre-commit hook unchanged. Every hit prints its label and the surrounding text.
 
 ## Wire it as a hook (Claude Code, optional)
 
-COG ships no hooks by default. If you want the check enforced rather than remembered,
+No hook is installed by default. If you want the check enforced rather than remembered,
 add this to `.claude/settings.json` yourself. `--hook` reads the hook payload on stdin
 and answers with a permission decision.
 
@@ -94,7 +94,7 @@ working session. Expect it to fire on you within the hour; that is the point of 
 ## What is counted, not banned
 
 `robust, seamless, leverage, utilize, delve, empower, streamline, genuinely, quietly,
-load-bearing, deep dive, clean, plain, simple, elegant, powerful, lightweight,
+load-bearing, deep dive,
 tapestry, game-changer, paradigm shift, cutting-edge`
 
 Three or more in one piece fails, on the reading that density means decoration. One
@@ -123,4 +123,4 @@ and prefer a reviewer from a different model family than the author, because a
 same-family reviewer shares the author's sense of what a finished answer looks like
 and waves through the same shapes.
 
-For the tics that are yours rather than universal, measure them: `voice-baseline`.
+For the tics that are yours rather than universal, measure them: count headings, sentence openers and closing lines across a corpus of your own writing, and cap the shapes that recur in every piece.

@@ -149,8 +149,8 @@ An agent writing in someone's voice samples the median of that person, not only 
 of the internet, and regresses toward their most frequent choices. A word that was a choice
 at one use comes back at five, and the fifth use teaches the next draft.
 
-Generic ban lists miss this, because the words are the author's own. Measure them: the
-`voice-baseline` skill counts a corpus and checks a draft against its own rates. Typical
+Generic ban lists miss this, because the words are the author's own. Measure them: count
+a corpus of the author's writing and check each draft against its own rates. Typical
 finds in a real 27-file archive: 53 headings starting with "The", 387 of 2,288 sentences
 opening with "The", 25 closing lines of the form "That is the point."
 
