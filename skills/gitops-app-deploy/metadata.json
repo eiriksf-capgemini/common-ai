@@ -8,7 +8,7 @@
     "references/readme-deploy-section.md"
   ],
   "examples": [
-    "Make this app deployable to the cloud-infra AKS cluster",
+    "Make this app deployable to our GitOps-managed AKS cluster",
     "Add kustomize manifests for this service in the gitops repo",
     "Build and push this image to our ACR and wire it up in Argo CD",
     "Write the deploy section of the README for the AKS setup",

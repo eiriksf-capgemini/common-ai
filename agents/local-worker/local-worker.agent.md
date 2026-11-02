@@ -1,7 +1,7 @@
 ---
 name: local-worker
 description: Runs small, scoped tasks on the cheapest model available, for one-file edits, renames and lookups
-model: Claude Haiku 5.5
+model: Claude Haiku 4.5
 tools:
   - read
   - edit

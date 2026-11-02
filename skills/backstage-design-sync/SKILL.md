@@ -44,26 +44,37 @@ Create a theme module mirroring whatever pattern the app already uses for its si
 ```ts
 import { createUnifiedTheme, palettes, pageTheme, genPageTheme, shapes } from '@backstage/theme';
 
-const fontFamily = '"Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'; // from the DS
+// Every value below comes from the DS tokens read in step 1 (or the hexes the user gave). The
+// '<...>' strings are placeholders, not defaults: never ship this file with them in place.
+const fontFamily = '"<ds-font>", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+const ds = {
+  primary: '<primary hex>',
+  secondary: '<secondary hex>',
+  surface: '<page background hex>',
+  paper: '<card background hex>',
+  navBackground: '<nav background hex>',
+  navText: '<nav text hex>',
+  navTextSelected: '<nav selected text hex>',
+};
 
 // See step 3 — Backstage's page-theme banner is a SEPARATE color table from `palette`.
 const brandPageTheme = {
   ...pageTheme,
-  home: genPageTheme({ colors: ['#061a2b', '#0070ad'], shape: shapes.wave }),
+  home: genPageTheme({ colors: [ds.navBackground, ds.primary], shape: shapes.wave }),
 };
 
 export const lightTheme = createUnifiedTheme({
   palette: {
     ...palettes.light,
-    primary: { main: '#0070ad' },
-    secondary: { main: '#12abdb' },
-    background: { default: '#f7f9fa', paper: '#ffffff' },
+    primary: { main: ds.primary },
+    secondary: { main: ds.secondary },
+    background: { default: ds.surface, paper: ds.paper },
     navigation: {
       ...palettes.light.navigation,
-      background: '#061a2b',
-      indicator: '#12abdb',
-      color: '#c0dfee',
-      selectedColor: '#ffffff',
+      background: ds.navBackground,
+      indicator: ds.secondary,
+      color: ds.navText,
+      selectedColor: ds.navTextSelected,
     },
   },
   fontFamily,
